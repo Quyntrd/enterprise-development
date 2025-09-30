@@ -25,7 +25,7 @@ public class BicycleModel
     /// <summary>
     /// 
     /// </summary>
-    public required double WheelSize { get; set; }
+    public required decimal WheelSizeInInches { get; set; }
 
     /// <summary>
     /// 

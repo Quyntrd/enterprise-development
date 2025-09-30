@@ -26,7 +26,7 @@ public class BicycleRentalFixture
     /// <summary>
     /// 
     /// </summary>
-    public List<Rental> Rentals { get; } = new();
+    public List<Rental> Rentals { get; } = [];
 
     private int _rentalId = 1;
 
@@ -38,7 +38,7 @@ public class BicycleRentalFixture
                 Id = 1,
                 Name = "SportPro 1000",
                 Type = BicycleType.Sport,
-                WheelSize = 28,
+                WheelSizeInInches = 28m,
                 MaxPassengerWeightKg = 100m,
                 WeightKg = 8.5m,
                 BrakeType = "Disc",
@@ -50,7 +50,7 @@ public class BicycleRentalFixture
                 Id = 2,
                 Name = "SpeedX Race",
                 Type = BicycleType.Sport,
-                WheelSize = 28,
+                WheelSizeInInches = 28m,
                 MaxPassengerWeightKg = 95m,
                 WeightKg = 7.8m,
                 BrakeType = "Disc",
@@ -62,7 +62,7 @@ public class BicycleRentalFixture
                 Id = 3,
                 Name = "MountainMax",
                 Type = BicycleType.Mountain,
-                WheelSize = 27,
+                WheelSizeInInches = 27m,
                 MaxPassengerWeightKg = 120m,
                 WeightKg = 14.0m,
                 BrakeType = "Disc",
@@ -74,7 +74,7 @@ public class BicycleRentalFixture
                 Id = 4,
                 Name = "CityComfort",
                 Type = BicycleType.City,
-                WheelSize = 26,
+                WheelSizeInInches = 26m,
                 MaxPassengerWeightKg = 110m,
                 WeightKg = 12.5m,
                 BrakeType = "V-Brake",
@@ -86,7 +86,7 @@ public class BicycleRentalFixture
                 Id = 5,
                 Name = "EcoRide E1",
                 Type = BicycleType.Electric,
-                WheelSize = 26,
+                WheelSizeInInches = 26m,
                 MaxPassengerWeightKg = 120m,
                 WeightKg = 22.0m,
                 BrakeType = "Disc",
@@ -98,7 +98,7 @@ public class BicycleRentalFixture
                 Id = 6,
                 Name = "RoadMaster",
                 Type = BicycleType.Road,
-                WheelSize = 28,
+                WheelSizeInInches = 28m,
                 MaxPassengerWeightKg = 90m,
                 WeightKg = 8.9m,
                 BrakeType = "Caliper",
@@ -110,7 +110,7 @@ public class BicycleRentalFixture
                 Id = 7,
                 Name = "TrailRunner",
                 Type = BicycleType.Mountain,
-                WheelSize = 27,
+                WheelSizeInInches = 27m,
                 MaxPassengerWeightKg = 115m,
                 WeightKg = 13.0m,
                 BrakeType = "Disc",
@@ -122,7 +122,7 @@ public class BicycleRentalFixture
                 Id = 8,
                 Name = "UrbanLite",
                 Type = BicycleType.City,
-                WheelSize= 26,
+                WheelSizeInInches= 26m,
                 MaxPassengerWeightKg = 105m,
                 WeightKg = 11.0m,
                 BrakeType = "V-Brake",
@@ -134,7 +134,7 @@ public class BicycleRentalFixture
                 Id = 9,
                 Name = "SprintElite",
                 Type = BicycleType.Road,
-                WheelSize = 28,
+                WheelSizeInInches = 28m,
                 MaxPassengerWeightKg = 95m,
                 WeightKg = 7.6m,
                 BrakeType = "Caliper",
@@ -146,7 +146,7 @@ public class BicycleRentalFixture
                 Id = 10,
                 Name = "ComfortCity",
                 Type = BicycleType.City,
-                WheelSize = 26,
+                WheelSizeInInches = 26m,
                 MaxPassengerWeightKg = 120m,
                 WeightKg = 13.5m,
                 BrakeType = "V-Brake",
@@ -158,7 +158,7 @@ public class BicycleRentalFixture
                 Id = 11,
                 Name = "VintageTour",
                 Type = BicycleType.City,
-                WheelSize = 26,
+                WheelSizeInInches = 26m,
                 MaxPassengerWeightKg = 100m,
                 WeightKg = 15.0m,
                 BrakeType = "Coaster",
@@ -170,7 +170,7 @@ public class BicycleRentalFixture
                 Id = 12,
                 Name = "TestModelX",
                 Type = BicycleType.Mountain,
-                WheelSize = 27,
+                WheelSizeInInches = 27m,
                 MaxPassengerWeightKg = 110m,
                 WeightKg = 14.5m,
                 BrakeType = "Disc",
@@ -365,44 +365,44 @@ public class BicycleRentalFixture
             }
         ]);
 
-        CreateRental(bicycleId: 1,  renterId: 1, startAt: new DateTime(2025, 1, 10, 9, 0, 0),  durationHours: 2.5m);
-        CreateRental(bicycleId: 2, renterId: 1, startAt: new DateTime(2025, 1, 12, 14, 0, 0), durationHours: 1.0m);
-        CreateRental(bicycleId: 1, renterId: 1, startAt: new DateTime(2025, 2, 3, 16, 30, 0), durationHours: 3.0m);
-        CreateRental(bicycleId: 3, renterId: 2, startAt: new DateTime(2025, 2, 5, 10, 0, 0), durationHours: 1.5m);
-        CreateRental(bicycleId: 4, renterId: 3, startAt: new DateTime(2025, 2, 7, 11, 30, 0), durationHours: 4.0m);
-        CreateRental(bicycleId: 5, renterId: 4, startAt: new DateTime(2025, 2, 10, 9, 15, 0), durationHours: 0.5m);
-        CreateRental(bicycleId: 6, renterId: 5, startAt: new DateTime(2025, 3, 1, 8, 0, 0), durationHours: 6.0m);
-        CreateRental(bicycleId: 7, renterId: 6, startAt: new DateTime(2025, 3, 4, 18, 0, 0), durationHours: 2.0m);
-        CreateRental(bicycleId: 8, renterId: 7, startAt: new DateTime(2025, 3, 10, 12, 0, 0), durationHours: 12.0m);
-        CreateRental(bicycleId: 9, renterId: 8, startAt: new DateTime(2025, 3, 15, 7, 0, 0), durationHours: 8.0m);
-        CreateRental(bicycleId: 2, renterId: 9, startAt: new DateTime(2025, 4, 1, 9, 0, 0), durationHours: 3.5m);
-        CreateRental(bicycleId: 3, renterId: 10, startAt: new DateTime(2025, 4, 3, 14, 0, 0), durationHours: 1.0m);
-        CreateRental(bicycleId: 5, renterId: 11, startAt: new DateTime(2025, 4, 10, 10, 0, 0), durationHours: 24.0m);
-        CreateRental(bicycleId: 9, renterId: 1, startAt: new DateTime(2025, 4, 12, 9, 30, 0), durationHours: 0.75m);
+        CreateRental(1, 1, new DateTime(2025, 1, 10, 9, 0, 0), 2.5m);
+        CreateRental(2, 1, new DateTime(2025, 1, 12, 14, 0, 0), 1.0m);
+        CreateRental(1, 1, new DateTime(2025, 2, 3, 16, 30, 0), 3.0m);
+        CreateRental(3, 2, new DateTime(2025, 2, 5, 10, 0, 0), 1.5m);
+        CreateRental(4, 3, new DateTime(2025, 2, 7, 11, 30, 0), 4.0m);
+        CreateRental(5, 4, new DateTime(2025, 2, 10, 9, 15, 0), 0.5m);
+        CreateRental(6, 5, new DateTime(2025, 3, 1, 8, 0, 0), 6.0m);
+        CreateRental(7, 6, new DateTime(2025, 3, 4, 18, 0, 0), 2.0m);
+        CreateRental(8, 7, new DateTime(2025, 3, 10, 12, 0, 0), 12.0m);
+        CreateRental(9, 8, new DateTime(2025, 3, 15, 7, 0, 0), 8.0m);
+        CreateRental(2, 9, new DateTime(2025, 4, 1, 9, 0, 0), 3.5m);
+        CreateRental(3, 10, new DateTime(2025, 4, 3, 14, 0, 0), 1.0m);
+        CreateRental(5, 11, new DateTime(2025, 4, 10, 10, 0, 0), 24.0m);
+        CreateRental(9, 1, new DateTime(2025, 4, 12, 9, 30, 0), 0.75m);
     }
     /// <summary>
     /// 
     /// </summary>
     private void CreateRental(int bicycleId, int renterId, DateTime startAt, decimal durationHours)
+    {
+        var bike = Bicycles.SingleOrDefault(b => b.Id == bicycleId)
+            ?? throw new InvalidOperationException($"Bicycle Id={bicycleId} not found in fixture.");
+
+        var model = BicycleModels.SingleOrDefault(m => m.Id == bike.ModelId)
+            ?? throw new InvalidOperationException($"Model Id={bike.ModelId} not found for Bicycle Id={bicycleId}.");
+
+        var rental = new Rental
         {
-            var bike = Bicycles.SingleOrDefault(b => b.Id == bicycleId)
-                ?? throw new InvalidOperationException($"Bicycle Id={bicycleId} not found in fixture.");
+            Id = _rentalId++,
+            BicycleId = bicycleId,
+            RenterId = renterId,
+            StartAt = startAt,
+            DurationHours = durationHours,
+            PricePerHourAtRental = model.PricePerHour
+        };
 
-            var model = BicycleModels.SingleOrDefault(m => m.Id == bike.ModelId)
-                ?? throw new InvalidOperationException($"Model Id={bike.ModelId} not found for Bicycle Id={bicycleId}.");
-
-            var rental = new Rental
-            {
-                Id = _rentalId++,
-                BicycleId = bicycleId,
-                RenterId = renterId,
-                StartAt = startAt,
-                DurationHours = durationHours,
-                PricePerHourAtRental = model.PricePerHour
-            };
-
-            Rentals.Add(rental);
-        }
+        Rentals.Add(rental);
+    }
 }
 
 

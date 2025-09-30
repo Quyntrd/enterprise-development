@@ -1,5 +1,5 @@
 ﻿namespace BicycleRental.Domain.Enums;
-    
+
 /// <summary>
 /// Enumeration of bicycle types
 /// </summary>

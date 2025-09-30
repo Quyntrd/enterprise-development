@@ -34,9 +34,4 @@ public class Rental
     ///
     /// </summary>
     public required decimal PricePerHourAtRental { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public decimal TotalPrice => DurationHours * PricePerHourAtRental;
 }
