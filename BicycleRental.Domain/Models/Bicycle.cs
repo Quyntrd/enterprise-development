@@ -1,4 +1,4 @@
-﻿namespace BikeRental.Domain.Models;
+﻿namespace BicycleRental.Domain.Models;
 
 /// <summary>
 /// 

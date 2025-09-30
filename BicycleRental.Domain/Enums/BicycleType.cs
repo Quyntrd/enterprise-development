@@ -1,4 +1,4 @@
-﻿namespace BikeRental.Domain.Enums;
+﻿namespace BicycleRental.Domain.Enums;
     
 /// <summary>
 /// Enumeration of bicycle types
@@ -11,4 +11,3 @@ public enum BicycleType
     Electric,
     Sport
 }
-

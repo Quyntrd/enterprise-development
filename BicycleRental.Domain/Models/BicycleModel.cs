@@ -1,6 +1,6 @@
-﻿using BikeRental.Domain.Enums;
+﻿using BicycleRental.Domain.Enums;
 
-namespace BikeRental.Domain.Models;
+namespace BicycleRental.Domain.Models;
 
 /// <summary>
 /// 
@@ -25,7 +25,7 @@ public class BicycleModel
     /// <summary>
     /// 
     /// </summary>
-    public required int WheelSizeInInches { get; set; }
+    public required double WheelSize { get; set; }
 
     /// <summary>
     /// 
