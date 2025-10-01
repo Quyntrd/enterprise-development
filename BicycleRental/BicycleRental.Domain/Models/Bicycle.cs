@@ -1,12 +1,12 @@
 ﻿namespace BicycleRental.Domain.Models;
 
 /// <summary>
-/// 
+/// Represents a o.g. Bicycle
 /// </summary>
 public class Bicycle
 {
     /// <summary>
-    /// 
+    /// Unique id of the Bicycle
     /// </summary>
     public required int Id { get; set; }
 

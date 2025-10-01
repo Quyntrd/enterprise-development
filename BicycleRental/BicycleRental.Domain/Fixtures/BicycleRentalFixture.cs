@@ -4,32 +4,39 @@ using BicycleRental.Domain.Models;
 namespace BicycleRental.Domain.Fixtures;
 
 /// <summary>
-///
+/// Test Fixture for testing the BicycleRental.Domain
+/// Initializes:
+/// BicycleModels, Bicycles, Renter, Rental classes.
+/// Used in xUnit tests.
 /// </summary>
 public class BicycleRentalFixture
 {
     /// <summary>
-    ///
+    /// List of BicycleModels
     /// </summary>
     public List<BicycleModel> BicycleModels { get; } = [];
 
     /// <summary>
-    ///
+    /// List of Bicycles
     /// </summary>
     public List<Bicycle> Bicycles { get; } = [];
 
     /// <summary>
-    /// 
+    /// List of Renters
     /// </summary>
     public List<Renter> Renters { get; } = [];
 
     /// <summary>
-    /// 
+    /// List of Rentals
     /// </summary>
     public List<Rental> Rentals { get; } = [];
 
     private int _rentalId = 1;
 
+    /// <summary>
+    /// Constructor initializes fixture with determinastic test data.
+    /// Adds BicycleModels, Bicycles, Renters, Rentals
+    /// </summary>
     public BicycleRentalFixture()
     {
         BicycleModels.AddRange([
@@ -270,9 +277,9 @@ public class BicycleRentalFixture
             new Renter
             {
                 Id = 1,
-                FirstName = "Иван",
-                LastName = "Иванов",
-                Patronymic = "Иванович",
+                FirstName = "Евгений",
+                LastName = "Баженов",
+                Patronymic = "Владимирович",
                 Phone = "+7-900-000-0001"
             },
             new Renter
@@ -296,46 +303,46 @@ public class BicycleRentalFixture
                 Id = 4,
                 FirstName = "Ольга",
                 LastName = "Ольгина",
-                Patronymic = "Андреевна",
+                Patronymic = "Олеговна",
                 Phone = "+7-900-000-0004"
             },
             new Renter
             {
                 Id = 5,
-                FirstName = "Анна",
-                LastName = "Анникова",
-                Patronymic = "Михайловна",
+                FirstName = "Бутс",
+                LastName = "Клозович",
+                Patronymic = "Моторсайклов",
                 Phone = "+7-900-000-0005"
             },
             new Renter
             {
                 Id = 6,
-                FirstName = "Елена",
-                LastName = "Еленова",
+                FirstName = "Евгений",
+                LastName = "Батиков",
                 Patronymic = null,
                 Phone = "+7-900-000-0006"
             },
             new Renter
             {
                 Id = 7,
-                FirstName = "Дмитрий",
-                LastName = "Дмитриев",
-                Patronymic = "Владимирович",
+                FirstName = "Станислав",
+                LastName = "Васильев",
+                Patronymic = "Александрович",
                 Phone = "+7-900-000-0007"
             },
             new Renter
             {
                 Id = 8,
-                FirstName = "Михаил",
-                LastName = "Михайлов",
-                Patronymic = "Павлович",
+                FirstName = "Ружье",
+                LastName = "Бондарчука",
+                Patronymic = "Михалкович",
                 Phone = "+7-900-000-0008"
             },
             new Renter
             {
                 Id = 9,
-                FirstName = "Татьяна",
-                LastName = "Татьяничева",
+                FirstName = "Алексей",
+                LastName = "Команданте",
                 Patronymic = null,
                 Phone = "+7-900-000-0009"
             },
@@ -344,23 +351,23 @@ public class BicycleRentalFixture
                 Id = 10,
                 FirstName = "Алексей",
                 LastName = "Алексеев",
-                Patronymic = "Николаевич",
+                Patronymic = "Алексеевич",
                 Phone = "+7-900-000-0010"
             },
             new Renter
             {
                 Id = 11,
-                FirstName = "Ирина",
-                LastName = "Ирикова",
-                Patronymic = "Петровна",
+                FirstName = "Бикукл",
+                LastName = "Бикукле",
+                Patronymic = "Бикуклович",
                 Phone = "+7-900-000-0011"
             },
             new Renter
             {
                 Id = 12,
-                FirstName = "Владимир",
-                LastName = "Владимиров",
-                Patronymic = "Сергеевич",
+                FirstName = "Михал",
+                LastName = "Оскар",
+                Patronymic = "Наградович",
                 Phone = "+7-900-000-0012"
             }
         ]);
@@ -381,8 +388,13 @@ public class BicycleRentalFixture
         CreateRental(9, 1, new DateTime(2025, 4, 12, 9, 30, 0), 0.75m);
     }
     /// <summary>
-    /// 
+    /// Helper to create a Rental and add it to Rentals list
+    /// Copies price of BicycleModel at creation time
     /// </summary>
+    /// <param name="bicycleId">Id of the bicycle being rented.</param>
+    /// <param name="renterId">Id of the renter (client).</param>
+    /// <param name="startAt">Start time of rental.</param>
+    /// <param name="durationHours">Duration of rental in hours.</param>
     private void CreateRental(int bicycleId, int renterId, DateTime startAt, decimal durationHours)
     {
         var bike = Bicycles.SingleOrDefault(b => b.Id == bicycleId)

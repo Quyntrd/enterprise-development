@@ -1,7 +1,7 @@
 ﻿namespace BicycleRental.Domain.Enums;
 
 /// <summary>
-/// Enumeration of bicycle types
+/// Represents a type of bicycle that can be rented
 /// </summary>
 public enum BicycleType
 {
