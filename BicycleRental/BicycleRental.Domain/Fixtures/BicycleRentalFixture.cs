@@ -4,7 +4,7 @@ using BicycleRental.Domain.Models;
 namespace BicycleRental.Domain.Fixtures;
 
 /// <summary>
-/// Test Fixture for testing the BicycleRental.Domain
+/// Test Fixture for testing the BicycleRental.Domain.
 /// Initializes:
 /// BicycleModels, Bicycles, Renter, Rental classes.
 /// Used in xUnit tests.
@@ -12,22 +12,22 @@ namespace BicycleRental.Domain.Fixtures;
 public class BicycleRentalFixture
 {
     /// <summary>
-    /// List of BicycleModels
+    /// List of <see cref="BicycleModel"/>.
     /// </summary>
     public List<BicycleModel> BicycleModels { get; } = [];
 
     /// <summary>
-    /// List of Bicycles
+    /// List of <see cref="Bicycle"/>.
     /// </summary>
     public List<Bicycle> Bicycles { get; } = [];
 
     /// <summary>
-    /// List of Renters
+    /// List of <see cref="Renter"/>.
     /// </summary>
     public List<Renter> Renters { get; } = [];
 
     /// <summary>
-    /// List of Rentals
+    /// List of <see cref="Rental"/>.
     /// </summary>
     public List<Rental> Rentals { get; } = [];
 
@@ -35,7 +35,7 @@ public class BicycleRentalFixture
 
     /// <summary>
     /// Constructor initializes fixture with determinastic test data.
-    /// Adds BicycleModels, Bicycles, Renters, Rentals
+    /// Adds <see cref="BicycleModel"/>, <see cref="Bicycle"/>, <see cref="Renter"/>, <see cref="Rental"/>.
     /// </summary>
     public BicycleRentalFixture()
     {
@@ -388,8 +388,8 @@ public class BicycleRentalFixture
         CreateRental(9, 1, new DateTime(2025, 4, 12, 9, 30, 0), 0.75m);
     }
     /// <summary>
-    /// Helper to create a Rental and add it to Rentals list
-    /// Copies price of BicycleModel at creation time
+    /// Helper to create a <see cref="Rental"/> and add it to <see cref="Rentals"/>.
+    /// Copies price of <see cref="BicycleModel"/> at creation time.
     /// </summary>
     /// <param name="bicycleId">Id of the bicycle being rented.</param>
     /// <param name="renterId">Id of the renter (client).</param>

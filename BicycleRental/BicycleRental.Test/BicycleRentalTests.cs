@@ -4,12 +4,14 @@ using BicycleRental.Domain.Fixtures;
 namespace BicycleRental.Tests;
 
 /// <summary>
-///
+/// Unit tests for the BikeRental domain using a prepopulated deterministic fixture.
+/// The fixture provides BicycleModels, Bicycles, Renters and Rentals for LINQ-based assertions.
 /// </summary>
-public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<BicycleRentalFixture>
+public class BicycleRentalTests(BicycleRentalFixture fixture) : IClassFixture<BicycleRentalFixture>
 {
     /// <summary>
-    ///
+    /// Verifies that all returned bicycles belong to models of type sport bicycle.
+    /// Ensures the fixture contains sport models and that bicycles reference those models.
     /// </summary>
     [Fact]
     public void GetAllSportBicycles_ShouldReturnOnlySportModels()
@@ -28,7 +30,8 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    ///
+    /// Calculates profit per model (DurationHours * PricePerHourAtRental), returns top 5 models by profit,
+    /// and verifies the result is ordered descending by profit and contains at most five items.
     /// </summary>
     [Fact]
     public void GetTop5ModelsByProfit_ShouldReturnAtMostFiveOrderedDescending()
@@ -63,7 +66,7 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    ///
+    /// Returns top 5 models by total rental duration (sum of hours) and verifies ordering descending by total hours.
     /// </summary>
     [Fact]
     public void GetTop5ModelsByDuration_ShouldReturnAtMostFiveOrderedDescending()
@@ -92,7 +95,8 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    ///
+    /// Verifies basic statistical invariants for rental durations: min, max, average.
+    /// Ensures values are non-negative and min <= avg <= max.
     /// </summary>
     [Fact]
     public void RentalDurationMinMaxAverage_ShouldBeConsistent()
@@ -109,7 +113,7 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    ///
+    /// Sums rental time by bicycle type and asserts that the sum across types equals the overall total rental hours.
     /// </summary>
     [Fact]
     public void SumRentalTimePerType_TotalEqualsOverallTotal()
@@ -127,7 +131,7 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    ///
+    /// Identifies models that were never rented and asserts that expected model ids exist among them (fixture-specific check).
     /// </summary>
     [Fact]
     public void ModelsNeverRented_ShouldContainExpectedModels()
@@ -144,7 +148,7 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    ///
+    /// Finds the renter with the highest rental count and asserts the expected top renter id and count (fixture-specific).
     /// </summary>
     [Fact]
     public void TopRentersByCount_ShouldReturnExpectedTopRenter()
@@ -160,7 +164,8 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    /// 
+    /// Ensures that each rental's <see cref="Rental.PricePerHourAtRental"/> equals the corresponding model's current price in the fixture.
+    /// This guarantees revenue calculations are based on the recorded price at rental time.
     /// </summary>
     [Fact]
     public void AllRentalsPricePerHourAtRental_MatchesModelPrice()
@@ -173,8 +178,9 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
 
         Assert.Empty(mismatches);
     }
+
     /// <summary>
-    /// 
+    /// Verifies that all rentals have a non-default date time in <see cref="Rental.StartAt"/>.
     /// </summary>
     [Fact]
     public void AllRentals_StartAt_IsInitialized()
@@ -182,8 +188,9 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
         Assert.NotEmpty(fixture.Rentals);
         Assert.All(fixture.Rentals, r => Assert.NotEqual(default(DateTime), r.StartAt));
     }
+
     /// <summary>
-    /// 
+    /// Asserts that all bicycle serial numbers in the fixture are unique.
     /// </summary>
     [Fact]
     public void Bicycles_SerialNumber_AreUnique()
