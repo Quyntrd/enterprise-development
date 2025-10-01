@@ -30,4 +30,4 @@ jobs:
         run: dotnet build ./BicycleRental/BicycleRental.sln --no-restore --configuration Release
 
       - name: Run tests (solution-level)
-        run: dotnet test ./BicycleRental/BicycleRental.sln --no-build --verbosity normal
+        run: dotnet test ./BicycleRental/BicycleRental.sln --no-build --verbosity normal --configuration Release
