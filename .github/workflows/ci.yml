@@ -27,7 +27,7 @@ jobs:
         run: dotnet restore ./BicycleRental/BicycleRental.sln
 
       - name: Build solution
-        run: dotnet build ./BicycleRental/BicycleRental.sln--no-restore --configuration Release
+        run: dotnet build ./BicycleRental/BicycleRental.sln --no-restore --configuration Release
 
       - name: Run tests
         run: dotnet test ./BicycleRental/BicycleRental.Tests/BicycleRentalTests.csproj --no-build --verbosity detailed
