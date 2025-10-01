@@ -14,9 +14,14 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     [Fact]
     public void GetAllSportBicycles_ShouldReturnOnlySportModels()
     {
-        var sportModelIds = fixture.BicycleModels.Where(m => m.Type == BicycleType.Sport).Select(m => m.Id).ToHashSet();
+        var sportModelIds = fixture.BicycleModels
+            .Where(m => m.Type == BicycleType.Sport)
+            .Select(m => m.Id)
+            .ToHashSet();
 
-        var sportBicycles = fixture.Bicycles.Where(b => sportModelIds.Contains(b.ModelId)).ToList();
+        var sportBicycles = fixture.Bicycles
+            .Where(b => sportModelIds.Contains(b.ModelId))
+            .ToList();
 
         Assert.NotEmpty(sportModelIds);
         Assert.All(sportBicycles, b => Assert.Contains(b.ModelId, sportModelIds));
@@ -24,12 +29,10 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
 
     /// <summary>
     ///
-    ///
     /// </summary>
     [Fact]
     public void GetTop5ModelsByProfit_ShouldReturnAtMostFiveOrderedDescending()
     {
-        // Act
         var profitByModel = fixture.Rentals
             .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => new { r, b })
             .Join(fixture.BicycleModels, rb => rb.b.ModelId, m => m.Id, (rb, m) => new
@@ -92,7 +95,7 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     ///
     /// </summary>
     [Fact]
-    public void RentalDuration_MinMaxAverage_ShouldBeConsistent()
+    public void RentalDurationMinMaxAverage_ShouldBeConsistent()
     {
         Assert.NotEmpty(fixture.Rentals);
 
@@ -106,7 +109,6 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     }
 
     /// <summary>
-    ///
     ///
     /// </summary>
     [Fact]
@@ -130,7 +132,6 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
     [Fact]
     public void ModelsNeverRented_ShouldContainExpectedModels()
     {
-
         var rentedModelIds = fixture.Rentals
             .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => b.ModelId)
             .Distinct()
@@ -144,10 +145,9 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
 
     /// <summary>
     ///
-    ///
     /// </summary>
     [Fact]
-    public void TopRenters_ByCount_ShouldReturnExpectedTopRenter()
+    public void TopRentersByCount_ShouldReturnExpectedTopRenter()
     {
         var top = fixture.Rentals
             .GroupBy(r => r.RenterId)
@@ -157,5 +157,41 @@ public class BikeRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bicyc
 
         Assert.Equal(1, top.RenterId);
         Assert.Equal(4, top.Count);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [Fact]
+    public void AllRentalsPricePerHourAtRental_MatchesModelPrice()
+    {
+        var mismatches = fixture.Rentals
+            .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => new { r, b })
+            .Join(fixture.BicycleModels, rb => rb.b.ModelId, m => m.Id, (rb, m) => new { rb.r, ModelPrice = m.PricePerHour })
+            .Where(x => x.r.PricePerHourAtRental != x.ModelPrice)
+            .ToList();
+
+        Assert.Empty(mismatches);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    [Fact]
+    public void AllRentals_StartAt_IsInitialized()
+    {
+        Assert.NotEmpty(fixture.Rentals);
+        Assert.All(fixture.Rentals, r => Assert.NotEqual(default(DateTime), r.StartAt));
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    [Fact]
+    public void Bicycles_SerialNumber_AreUnique()
+    {
+        var dup = fixture.Bicycles.GroupBy(b => b.SerialNumber)
+                   .Where(g => g.Count() > 1)
+                   .Select(g => new { Serial = g.Key, Count = g.Count() })
+                   .ToList();
+        Assert.Empty(dup);
     }
 }

@@ -25,17 +25,17 @@ public class BicycleModel
     /// <summary>
     /// 
     /// </summary>
-    public required decimal WheelSizeInInches { get; set; }
+    public required double WheelSizeInInches { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    public required decimal MaxPassengerWeightKg { get; set; }
+    public required double MaxPassengerWeightKg { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    public required decimal WeightKg { get; set; }
+    public required double WeightKg { get; set; }
 
     /// <summary>
     /// 
