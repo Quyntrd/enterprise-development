@@ -1,0 +1,33 @@
+name: CI — build & tests
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: dotnet restore
+        run: dotnet restore ./BicycleRental/BicycleRental.sln
+
+      - name: Build solution
+        run: dotnet build ./BicycleRental/BicycleRental.sln--no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test ./BicycleRental/BicycleRental.Tests/BicycleRentalTests.csproj --no-build --verbosity detailed
