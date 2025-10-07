@@ -6,7 +6,7 @@
 public class Rental
 {
     /// <summary>
-    /// Unique identifier of the <see cref="Rental"/>.
+    /// Unique identifier of the Rental.
     /// </summary>
     public required int Id { get; set; }
 
@@ -26,13 +26,7 @@ public class Rental
     public required DateTime StartAt { get; set; }
 
     /// <summary>
-    /// Duration of the rental in hours. May be fractional (for example, 1.5 means one hour and thirty minutes).
+    /// Duration of the rental in hours.
     /// </summary>
-    public required decimal DurationHours { get; set; }
-
-    /// <summary>
-    /// Price per hour recorded at the moment of rental (copied from the <see cref="BicycleModel.PricePerHour"/>).
-    /// Used to calculate revenue for this rental regardless of later price changes.
-    /// </summary>
-    public required decimal PricePerHourAtRental { get; set; }
+    public required TimeSpan DurationHours { get; set; }
 }

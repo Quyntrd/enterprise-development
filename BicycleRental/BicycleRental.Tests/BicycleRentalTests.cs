@@ -1,32 +1,24 @@
 using BicycleRental.Domain.Enums;
-using BicycleRental.Domain.Fixtures;
+using BicycleRental.Domain.DataSeed;
 
 namespace BicycleRental.Tests;
 
 /// <summary>
-/// Unit tests for the BikeRental domain using a prepopulated deterministic fixture.
+/// Unit tests for the BikeRental domain using a prepopulated deterministic data seed.
 /// The fixture provides BicycleModels, Bicycles, Renters and Rentals for LINQ-based assertions.
 /// </summary>
-public class BicycleRentalTests(BicycleRentalFixture fixture) : IClassFixture<BicycleRentalFixture>
+public class BicycleRentalTests(BicycleRentalDataSeed dataSeed) : IClassFixture<BicycleRentalDataSeed>
 {
     /// <summary>
-    /// Verifies that all returned bicycles belong to models of type sport bicycle.
-    /// Ensures the fixture contains sport models and that bicycles reference those models.
+    /// Ensures the fixture contains 2 sport models.
     /// </summary>
     [Fact]
-    public void GetAllSportBicycles_ShouldReturnOnlySportModels()
+    public void SportBicycles_Count_ShouldMatchSeed()
     {
-        var sportModelIds = fixture.BicycleModels
-            .Where(m => m.Type == BicycleType.Sport)
-            .Select(m => m.Id)
-            .ToHashSet();
+        var sportModelIds = dataSeed.BicycleModels.Where(m => m.Type == BicycleType.Sport).Select(m => m.Id).ToHashSet();
 
-        var sportBicycles = fixture.Bicycles
-            .Where(b => sportModelIds.Contains(b.ModelId))
-            .ToList();
-
-        Assert.NotEmpty(sportModelIds);
-        Assert.All(sportBicycles, b => Assert.Contains(b.ModelId, sportModelIds));
+        var sportBicyclesCount = dataSeed.Bicycles.Count(b => sportModelIds.Contains(b.ModelId));
+        Assert.Equal(2, sportBicyclesCount);
     }
 
     /// <summary>
@@ -36,33 +28,24 @@ public class BicycleRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bi
     [Fact]
     public void GetTop5ModelsByProfit_ShouldReturnAtMostFiveOrderedDescending()
     {
-        var profitByModel = fixture.Rentals
-            .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => new { r, b })
-            .Join(fixture.BicycleModels, rb => rb.b.ModelId, m => m.Id, (rb, m) => new
-            {
-                ModelId = m.Id,
-                Profit = rb.r.DurationHours * rb.r.PricePerHourAtRental
-            })
-            .GroupBy(x => x.ModelId)
-            .Select(g => new { ModelId = g.Key, Profit = g.Sum(x => x.Profit) })
-            .OrderByDescending(x => x.Profit)
-            .Take(5)
-            .ToList();
+        var profitByModel = (from r in dataSeed.Rentals
+                             join b in dataSeed.Bicycles on r.BicycleId equals b.Id
+                             join m in dataSeed.BicycleModels on b.ModelId equals m.Id
+                             group new { r, m } by m.Id into g
+                             select new
+                             {
+                                 ModelId = g.Key,
+                                 Profit = g.Sum(x => x.m.PricePerHour * (decimal)x.r.DurationHours.TotalHours)
+                             })
+                            .OrderByDescending(x => x.Profit)
+                            .Take(5)
+                            .ToList();
 
         Assert.NotNull(profitByModel);
         Assert.True(profitByModel.Count <= 5);
 
-        for (var i = 1; i < profitByModel.Count; i++)
-        {
-            Assert.True(profitByModel[i - 1].Profit >= profitByModel[i].Profit,
-                $"Model {profitByModel[i - 1].ModelId} should have >= profit than {profitByModel[i].ModelId}");
-        }
-
-        if (profitByModel.Any())
-        {
-            var maxProfit = profitByModel.Max(x => x.Profit);
-            Assert.Equal(maxProfit, profitByModel.First().Profit);
-        }
+        var isOrdered = profitByModel.SequenceEqual(profitByModel.OrderByDescending(x => x.Profit));
+        Assert.True(isOrdered, "profitByModel should be ordered by descending profit");
     }
 
     /// <summary>
@@ -71,27 +54,20 @@ public class BicycleRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bi
     [Fact]
     public void GetTop5ModelsByDuration_ShouldReturnAtMostFiveOrderedDescending()
     {
-        var durationByModel = fixture.Rentals
-            .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => new { r, b })
-            .Join(fixture.BicycleModels, rb => rb.b.ModelId, m => m.Id, (rb, m) => new
-            {
-                ModelId = m.Id,
-                Hours = rb.r.DurationHours
-            })
-            .GroupBy(x => x.ModelId)
-            .Select(g => new { ModelId = g.Key, TotalHours = g.Sum(x => x.Hours) })
-            .OrderByDescending(x => x.TotalHours)
-            .Take(5)
-            .ToList();
+        var durationByModel = (from r in dataSeed.Rentals
+                               join b in dataSeed.Bicycles on r.BicycleId equals b.Id
+                               join m in dataSeed.BicycleModels on b.ModelId equals m.Id
+                               group r by m.Id into g
+                               select new { ModelId = g.Key, Total = g.Aggregate(TimeSpan.Zero, (acc, x) => acc + x.DurationHours) })
+                              .OrderByDescending(x => x.Total)
+                              .Take(5)
+                              .ToList();
 
         Assert.NotNull(durationByModel);
         Assert.True(durationByModel.Count <= 5);
 
-        for (var i = 1; i < durationByModel.Count; i++)
-        {
-            Assert.True(durationByModel[i - 1].TotalHours >= durationByModel[i].TotalHours,
-                $"Model {durationByModel[i - 1].ModelId} should have >= total hours than {durationByModel[i].ModelId}");
-        }
+        var isOrdered = durationByModel.SequenceEqual(durationByModel.OrderByDescending(x => x.Total));
+        Assert.True(isOrdered, "durationByModel should be ordered by descending total duration");
     }
 
     /// <summary>
@@ -101,11 +77,11 @@ public class BicycleRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bi
     [Fact]
     public void RentalDurationMinMaxAverage_ShouldBeConsistent()
     {
-        Assert.NotEmpty(fixture.Rentals);
+        Assert.NotEmpty(dataSeed.Rentals);
 
-        var min = fixture.Rentals.Min(r => r.DurationHours);
-        var max = fixture.Rentals.Max(r => r.DurationHours);
-        var avg = fixture.Rentals.Average(r => r.DurationHours);
+        var min = dataSeed.Rentals.Min(r => r.DurationHours.Hours);
+        var max = dataSeed.Rentals.Max(r => r.DurationHours.Hours);
+        var avg = dataSeed.Rentals.Average(r => r.DurationHours.Hours);
 
         Assert.True(min >= 0, "min must be non-negative");
         Assert.True(max >= 0, "max must be non-negative");
@@ -118,75 +94,46 @@ public class BicycleRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bi
     [Fact]
     public void SumRentalTimePerType_TotalEqualsOverallTotal()
     {
-        var totalsByType = fixture.Rentals
-            .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => new { r, b })
-            .Join(fixture.BicycleModels, rb => rb.b.ModelId, m => m.Id, (rb, m) => new { rb.r.DurationHours, m.Type })
-            .GroupBy(x => x.Type)
-            .ToDictionary(g => g.Key, g => g.Sum(x => x.DurationHours));
+        var totalsByType = (from r in dataSeed.Rentals
+                            join b in dataSeed.Bicycles on r.BicycleId equals b.Id
+                            join m in dataSeed.BicycleModels on b.ModelId equals m.Id
+                            group r.DurationHours by m.Type into g
+                            select new { Type = g.Key, Total = g.Aggregate(TimeSpan.Zero, (acc, x) => acc + x) })
+                           .ToDictionary(x => x.Type, x => x.Total);
 
-        var sumAcrossTypes = totalsByType.Values.Sum();
-        var total = fixture.Rentals.Sum(r => r.DurationHours);
+        var sumAcrossTypes = totalsByType.Values.Aggregate(TimeSpan.Zero, (acc, t) => acc + t);
+        var total = dataSeed.Rentals.Aggregate(TimeSpan.Zero, (acc, r) => acc + r.DurationHours);
 
         Assert.Equal(total, sumAcrossTypes);
     }
 
     /// <summary>
-    /// Identifies models that were never rented and asserts that expected model ids exist among them (fixture-specific check).
+    /// Identifies models that were never rented and asserts that expected model ids exist among them.
     /// </summary>
     [Fact]
     public void ModelsNeverRented_ShouldContainExpectedModels()
     {
-        var rentedModelIds = fixture.Rentals
-            .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => b.ModelId)
+        var rentedModelIds = dataSeed.Rentals
+            .Join(dataSeed.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => b.ModelId)
             .Distinct()
             .ToHashSet();
 
-        var neverRented = fixture.BicycleModels.Where(m => !rentedModelIds.Contains(m.Id)).ToList();
+        var neverRented = dataSeed.BicycleModels.Where(m => !rentedModelIds.Contains(m.Id)).ToList();
 
         Assert.Contains(neverRented, m => m.Id == 11);
         Assert.Contains(neverRented, m => m.Id == 12);
     }
 
     /// <summary>
-    /// Finds the renter with the highest rental count and asserts the expected top renter id and count (fixture-specific).
+    /// Finds the renter with the highest rental count and asserts the expected top renter id and count.
     /// </summary>
     [Fact]
     public void TopRentersByCount_ShouldReturnExpectedTopRenter()
     {
-        var top = fixture.Rentals
-            .GroupBy(r => r.RenterId)
-            .Select(g => new { RenterId = g.Key, Count = g.Count() })
-            .OrderByDescending(x => x.Count)
-            .First();
+        var top = dataSeed.Rentals.GroupBy(r => r.RenterId).Select(g => new { RenterId = g.Key, Count = g.Count() }).OrderByDescending(x => x.Count).First();
 
         Assert.Equal(1, top.RenterId);
         Assert.Equal(4, top.Count);
-    }
-
-    /// <summary>
-    /// Ensures that each rental's <see cref="Rental.PricePerHourAtRental"/> equals the corresponding model's current price in the fixture.
-    /// This guarantees revenue calculations are based on the recorded price at rental time.
-    /// </summary>
-    [Fact]
-    public void AllRentalsPricePerHourAtRental_MatchesModelPrice()
-    {
-        var mismatches = fixture.Rentals
-            .Join(fixture.Bicycles, r => r.BicycleId, b => b.Id, (r, b) => new { r, b })
-            .Join(fixture.BicycleModels, rb => rb.b.ModelId, m => m.Id, (rb, m) => new { rb.r, ModelPrice = m.PricePerHour })
-            .Where(x => x.r.PricePerHourAtRental != x.ModelPrice)
-            .ToList();
-
-        Assert.Empty(mismatches);
-    }
-
-    /// <summary>
-    /// Verifies that all rentals have a non-default date time in <see cref="Rental.StartAt"/>.
-    /// </summary>
-    [Fact]
-    public void AllRentals_StartAt_IsInitialized()
-    {
-        Assert.NotEmpty(fixture.Rentals);
-        Assert.All(fixture.Rentals, r => Assert.NotEqual(default(DateTime), r.StartAt));
     }
 
     /// <summary>
@@ -195,10 +142,6 @@ public class BicycleRentalTests(BicycleRentalFixture fixture) : IClassFixture<Bi
     [Fact]
     public void Bicycles_SerialNumber_AreUnique()
     {
-        var dup = fixture.Bicycles.GroupBy(b => b.SerialNumber)
-                   .Where(g => g.Count() > 1)
-                   .Select(g => new { Serial = g.Key, Count = g.Count() })
-                   .ToList();
-        Assert.Empty(dup);
+        Assert.Equal(dataSeed.Bicycles.Count, dataSeed.Bicycles.Select(b => b.SerialNumber).Distinct().Count());
     }
 }

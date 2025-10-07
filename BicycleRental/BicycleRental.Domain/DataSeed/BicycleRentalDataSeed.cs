@@ -1,15 +1,15 @@
 ﻿using BicycleRental.Domain.Enums;
 using BicycleRental.Domain.Models;
 
-namespace BicycleRental.Domain.Fixtures;
+namespace BicycleRental.Domain.DataSeed;
 
 /// <summary>
-/// Test Fixture for testing the BicycleRental.Domain.
+/// DataSeed for testing the BicycleRental.Domain.
 /// Initializes:
 /// BicycleModels, Bicycles, Renter, Rental classes.
 /// Used in xUnit tests.
 /// </summary>
-public class BicycleRentalFixture
+public class BicycleRentalDataSeed
 {
     /// <summary>
     /// List of <see cref="BicycleModel"/>.
@@ -37,7 +37,7 @@ public class BicycleRentalFixture
     /// Constructor initializes fixture with determinastic test data.
     /// Adds <see cref="BicycleModel"/>, <see cref="Bicycle"/>, <see cref="Renter"/>, <see cref="Rental"/>.
     /// </summary>
-    public BicycleRentalFixture()
+    public BicycleRentalDataSeed()
     {
         BicycleModels.AddRange([
             new BicycleModel
@@ -277,9 +277,9 @@ public class BicycleRentalFixture
             new Renter
             {
                 Id = 1,
-                FirstName = "Евгений",
-                LastName = "Баженов",
-                Patronymic = "Владимирович",
+                FirstName = "Александр",
+                LastName = "Александров",
+                Patronymic = "Александрович",
                 Phone = "+7-900-000-0001"
             },
             new Renter
@@ -309,40 +309,40 @@ public class BicycleRentalFixture
             new Renter
             {
                 Id = 5,
-                FirstName = "Бутс",
-                LastName = "Клозович",
-                Patronymic = "Моторсайклов",
+                FirstName = "Даниил",
+                LastName = "Даниилов",
+                Patronymic = "Даниилович",
                 Phone = "+7-900-000-0005"
             },
             new Renter
             {
                 Id = 6,
                 FirstName = "Евгений",
-                LastName = "Батиков",
+                LastName = "Онегин",
                 Patronymic = null,
                 Phone = "+7-900-000-0006"
             },
             new Renter
             {
                 Id = 7,
-                FirstName = "Станислав",
-                LastName = "Васильев",
-                Patronymic = "Александрович",
+                FirstName = "Маркус",
+                LastName = "Аврелиус",
+                Patronymic = "Антонинус",
                 Phone = "+7-900-000-0007"
             },
             new Renter
             {
                 Id = 8,
-                FirstName = "Ружье",
-                LastName = "Бондарчука",
-                Patronymic = "Михалкович",
+                FirstName = "Фёдор",
+                LastName = "Фёдоров",
+                Patronymic = "Фёдорович",
                 Phone = "+7-900-000-0008"
             },
             new Renter
             {
                 Id = 9,
                 FirstName = "Алексей",
-                LastName = "Команданте",
+                LastName = "Смирнов",
                 Patronymic = null,
                 Phone = "+7-900-000-0009"
             },
@@ -357,35 +357,35 @@ public class BicycleRentalFixture
             new Renter
             {
                 Id = 11,
-                FirstName = "Бикукл",
-                LastName = "Бикукле",
-                Patronymic = "Бикуклович",
+                FirstName = "Кирилл",
+                LastName = "Кириллов",
+                Patronymic = "Кириллович",
                 Phone = "+7-900-000-0011"
             },
             new Renter
             {
                 Id = 12,
-                FirstName = "Михал",
-                LastName = "Оскар",
-                Patronymic = "Наградович",
+                FirstName = "Михаил",
+                LastName = "Михаилов",
+                Patronymic = "Михайлович",
                 Phone = "+7-900-000-0012"
             }
         ]);
 
-        CreateRental(1, 1, new DateTime(2025, 1, 10, 9, 0, 0), 2.5m);
-        CreateRental(2, 1, new DateTime(2025, 1, 12, 14, 0, 0), 1.0m);
-        CreateRental(1, 1, new DateTime(2025, 2, 3, 16, 30, 0), 3.0m);
-        CreateRental(3, 2, new DateTime(2025, 2, 5, 10, 0, 0), 1.5m);
-        CreateRental(4, 3, new DateTime(2025, 2, 7, 11, 30, 0), 4.0m);
-        CreateRental(5, 4, new DateTime(2025, 2, 10, 9, 15, 0), 0.5m);
-        CreateRental(6, 5, new DateTime(2025, 3, 1, 8, 0, 0), 6.0m);
-        CreateRental(7, 6, new DateTime(2025, 3, 4, 18, 0, 0), 2.0m);
-        CreateRental(8, 7, new DateTime(2025, 3, 10, 12, 0, 0), 12.0m);
-        CreateRental(9, 8, new DateTime(2025, 3, 15, 7, 0, 0), 8.0m);
-        CreateRental(2, 9, new DateTime(2025, 4, 1, 9, 0, 0), 3.5m);
-        CreateRental(3, 10, new DateTime(2025, 4, 3, 14, 0, 0), 1.0m);
-        CreateRental(5, 11, new DateTime(2025, 4, 10, 10, 0, 0), 24.0m);
-        CreateRental(9, 1, new DateTime(2025, 4, 12, 9, 30, 0), 0.75m);
+        CreateRental(1, 1, new DateTime(2025, 1, 10, 9, 0, 0), TimeSpan.FromHours(2.5));
+        CreateRental(2, 1, new DateTime(2025, 1, 12, 14, 0, 0), TimeSpan.FromHours(1.0));
+        CreateRental(1, 1, new DateTime(2025, 2, 3, 16, 30, 0), TimeSpan.FromHours(3.0));
+        CreateRental(3, 2, new DateTime(2025, 2, 5, 10, 0, 0), TimeSpan.FromHours(1.5));
+        CreateRental(4, 3, new DateTime(2025, 2, 7, 11, 30, 0), TimeSpan.FromHours(4.0));
+        CreateRental(5, 4, new DateTime(2025, 2, 10, 9, 15, 0), TimeSpan.FromHours(0.5));
+        CreateRental(6, 5, new DateTime(2025, 3, 1, 8, 0, 0), TimeSpan.FromHours(6.0));
+        CreateRental(7, 6, new DateTime(2025, 3, 4, 18, 0, 0), TimeSpan.FromHours(2.0));
+        CreateRental(8, 7, new DateTime(2025, 3, 10, 12, 0, 0), TimeSpan.FromHours(12.0));
+        CreateRental(9, 8, new DateTime(2025, 3, 15, 7, 0, 0), TimeSpan.FromHours(8.0));
+        CreateRental(2, 9, new DateTime(2025, 4, 1, 9, 0, 0), TimeSpan.FromHours(3.5));
+        CreateRental(3, 10, new DateTime(2025, 4, 3, 14, 0, 0), TimeSpan.FromHours(1.0));
+        CreateRental(5, 11, new DateTime(2025, 4, 10, 10, 0, 0), TimeSpan.FromHours(24.0));
+        CreateRental(9, 1, new DateTime(2025, 4, 12, 9, 30, 0), TimeSpan.FromHours(0.75));
     }
     /// <summary>
     /// Helper to create a <see cref="Rental"/> and add it to <see cref="Rentals"/>.
@@ -395,7 +395,7 @@ public class BicycleRentalFixture
     /// <param name="renterId">Id of the renter (client).</param>
     /// <param name="startAt">Start time of rental.</param>
     /// <param name="durationHours">Duration of rental in hours.</param>
-    private void CreateRental(int bicycleId, int renterId, DateTime startAt, decimal durationHours)
+    private void CreateRental(int bicycleId, int renterId, DateTime startAt, TimeSpan durationHours)
     {
         var bike = Bicycles.SingleOrDefault(b => b.Id == bicycleId)
             ?? throw new InvalidOperationException($"Bicycle Id={bicycleId} not found in fixture.");
@@ -410,11 +410,8 @@ public class BicycleRentalFixture
             RenterId = renterId,
             StartAt = startAt,
             DurationHours = durationHours,
-            PricePerHourAtRental = model.PricePerHour
         };
 
         Rentals.Add(rental);
     }
 }
-
-
