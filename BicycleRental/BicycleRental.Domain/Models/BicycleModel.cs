@@ -13,7 +13,7 @@ public class BicycleModel
     public required int Id { get; set; }
 
     /// <summary>
-    /// Name of the Bicycl eModel. (e.g. "SportPro 1000").
+    /// Name of the Bicycle Model. (e.g. "SportPro 1000").
     /// </summary>
     public required string Name { get; set; }
 
