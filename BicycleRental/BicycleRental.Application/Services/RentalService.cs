@@ -9,7 +9,7 @@ namespace BicycleRental.Application.Services;
 /// Application service for rentals (CRUD + queries by bicycle/renter).
 /// Price calculations are performed here using the current price in BicycleModel repository.
 /// </summary>
-public class RentalService : BicycleRental.Api.Contracts.Contracts.IRentalService
+public class RentalService : Api.Contracts.Contracts.IRentalService
 {
     private readonly IRepository<Rental, int> _rentalRepo;
     private readonly IRepository<Bicycle, int> _bicycleRepo;
@@ -91,7 +91,6 @@ public class RentalService : BicycleRental.Api.Contracts.Contracts.IRentalServic
         var hours = (decimal)r.DurationHours.TotalHours;
         var total = decimal.Round(pricePerHour * hours, 2);
 
-        // create copy with prices applied (RentalDto is record in Contracts)
         return dto with { PricePerHour = pricePerHour, TotalPrice = total };
     }
 }

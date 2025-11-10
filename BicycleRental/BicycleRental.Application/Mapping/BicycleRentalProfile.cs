@@ -14,19 +14,15 @@ public class BicycleRentalProfile : Profile
 {
     public BicycleRentalProfile()
     {
-        // BicycleModel
         CreateMap<BicycleModel, BicycleModelDto>();
         CreateMap<BicycleModelCreateUpdateDto, BicycleModel>();
 
-        // Bicycle
         CreateMap<Bicycle, BicycleDto>();
         CreateMap<BicycleCreateUpdateDto, Bicycle>();
 
-        // Renter
         CreateMap<Renter, RenterDto>();
         CreateMap<RenterCreateUpdateDto, Renter>();
 
-        // Rental
         CreateMap<Rental, RentalDto>();
         CreateMap<RentalCreateUpdateDto, Rental>();
     }

@@ -8,7 +8,7 @@ namespace BicycleRental.Application.Services;
 /// <summary>
 /// Application service for bicycles (CRUD + queries by model).
 /// </summary>
-public class BicycleService : BicycleRental.Api.Contracts.Contracts.IBicycleService
+public class BicycleService : Api.Contracts.Contracts.IBicycleService
 {
     private readonly IRepository<Bicycle, int> _repo;
     private readonly IMapper _mapper;

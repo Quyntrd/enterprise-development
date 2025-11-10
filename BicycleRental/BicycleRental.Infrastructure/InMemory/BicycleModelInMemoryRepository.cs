@@ -43,7 +43,6 @@ public class BicycleModelInMemoryRepository : IRepository<BicycleModel, int>
     /// <inheritdoc/>
     public List<BicycleModel> ReadAll()
     {
-        // Return a shallow copy to avoid external modifications.
         return _models.ToList();
     }
 

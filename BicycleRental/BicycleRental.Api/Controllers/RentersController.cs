@@ -6,11 +6,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace BicycleRental.Api.Controllers;
 
 /// <summary>
-/// Controller for renters
+/// Controller for renter (client) CRUD operations and renter-specific queries.
 /// </summary>
+/// <param name="service">Application service for renters.</param>
+/// <param name="rentalService">Application service for rentals.</param>
+/// <param name="logger">Logger instance.</param>
 public class RentersController(IRenterService service, IRentalService rentalService, ILogger<RentersController> logger)
     : CrudControllerBase<RenterDto, RenterCreateUpdateDto, int>(service, logger)
 {
+    /// <summary>
+    /// Get all rentals made by a specific renter.
+    /// </summary>
+    /// <param name="id">Identifier of the renter.</param>
+    /// <returns>List of RentalDto for the renter, or NoContent if none exist.</returns>
     [HttpGet("{id}/rentals")]
     [ProducesResponseType(200)]
     [ProducesResponseType(204)]

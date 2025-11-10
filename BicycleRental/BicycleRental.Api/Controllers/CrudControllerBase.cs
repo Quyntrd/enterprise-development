@@ -7,18 +7,25 @@ namespace BicycleRental.Api.Controllers;
 /// Generic base controller providing CRUD endpoints.
 /// </summary>
 /// <typeparam name="TDto">DTO used for GET responses</typeparam>
-/// <typeparam name="TCreateUpdateDto">DTO used for POST/PUT</typeparam>
+/// <typeparam name="TCreateUpdateDto">DTO used for POST/PUT requests</typeparam>
 /// <typeparam name="TKey">Identifier type</typeparam>
 [Route("api/[controller]")]
 [ApiController]
-public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicationService<TDto, TCreateUpdateDto, TKey> appService,
+public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
+    IApplicationService<TDto, TCreateUpdateDto, TKey> appService,
     ILogger<CrudControllerBase<TDto, TCreateUpdateDto, TKey>> logger) : ControllerBase
     where TDto : class
     where TCreateUpdateDto : class
     where TKey : struct
 {
+    /// <summary>
+    /// Create a new resource.
+    /// </summary>
+    /// <param name="newDto">DTO containing data for the new resource.</param>
+    /// <returns>Created DTO with assigned identifier.</returns>
     [HttpPost]
     [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
     [ProducesResponseType(500)]
     public ActionResult<TDto> Create(TCreateUpdateDto newDto)
     {
@@ -30,39 +37,39 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
 
             if (res == null)
             {
-                // If service unexpectedly returned null, fallback to 204/500 as you prefer.
                 return StatusCode(500, "Created resource is null.");
             }
 
-            // Try to get Id property from returned DTO via reflection.
-            // This assumes DTO contains a property named "Id".
             var idProp = res.GetType().GetProperty("Id");
             if (idProp != null)
             {
                 var idValue = idProp.GetValue(res);
                 if (idValue != null)
                 {
-                    // CreatedAtAction will build Location header using route to Get action and id value.
                     return CreatedAtAction(nameof(Get), new { id = idValue }, res);
                 }
             }
 
-            // Fallback: DTO does not have Id or Id is null — return Created without route-location.
             return Created(string.Empty, res);
         }
         catch (ArgumentException argEx)
         {
-            // Validation errors from mapping/parsing -> 400 Bad Request
             logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(Create), GetType().Name);
             return BadRequest(argEx.Message);
         }
         catch (Exception ex)
         {
-            logger.LogError("An exception happened during {method} method of {controller}: {@exception}", nameof(Create), GetType().Name, ex);
-            return StatusCode(500, $"{ex.Message}\n\r{ex.InnerException?.Message}");
+            logger.LogError(ex, "Exception in {method} of {controller}", nameof(Create), GetType().Name);
+            return StatusCode(500, ex.Message);
         }
     }
 
+    /// <summary>
+    /// Update an existing resource.
+    /// </summary>
+    /// <param name="id">Identifier of the resource to update.</param>
+    /// <param name="newDto">DTO containing updated values.</param>
+    /// <returns>Updated DTO.</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
@@ -75,6 +82,11 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
             logger.LogInformation("{method} executed successfully on {controller}", nameof(Edit), GetType().Name);
             return Ok(res);
         }
+        catch (ArgumentException argEx)
+        {
+            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(Edit), GetType().Name);
+            return BadRequest(argEx.Message);
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Exception in {method} of {controller}", nameof(Edit), GetType().Name);
@@ -82,6 +94,11 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
         }
     }
 
+    /// <summary>
+    /// Delete an existing resource.
+    /// </summary>
+    /// <param name="id">Identifier of the resource to delete.</param>
+    /// <returns>HTTP status indicating outcome.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
@@ -94,6 +111,11 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
             logger.LogInformation("{method} executed successfully on {controller}", nameof(Delete), GetType().Name);
             return Ok();
         }
+        catch (ArgumentException argEx)
+        {
+            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(Delete), GetType().Name);
+            return BadRequest(argEx.Message);
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Exception in {method} of {controller}", nameof(Delete), GetType().Name);
@@ -101,6 +123,10 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
         }
     }
 
+    /// <summary>
+    /// Retrieve all resources.
+    /// </summary>
+    /// <returns>List of DTOs representing all resources.</returns>
     [HttpGet]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
@@ -120,6 +146,11 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
         }
     }
 
+    /// <summary>
+    /// Retrieve a single resource by identifier.
+    /// </summary>
+    /// <param name="id">Identifier of the resource to retrieve.</param>
+    /// <returns>DTO if found; otherwise NoContent.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(204)]

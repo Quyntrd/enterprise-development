@@ -12,7 +12,7 @@ namespace BicycleRental.Application.Services;
 /// <remarks>
 /// Depends on a repository for BicycleModel and a repository for Bicycle to return related entities.
 /// </remarks>
-public class BicycleModelService : BicycleRental.Api.Contracts.Contracts.IBicycleModelService
+public class BicycleModelService : Api.Contracts.Contracts.IBicycleModelService
 {
     private readonly IRepository<BicycleModel, int> _modelRepo;
     private readonly IRepository<Bicycle, int> _bicycleRepo;

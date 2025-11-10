@@ -9,7 +9,7 @@ namespace BicycleRental.Application.Services;
 /// <summary>
 /// Application service for renters (clients).
 /// </summary>
-public class RenterService : BicycleRental.Api.Contracts.Contracts.IRenterService
+public class RenterService : Api.Contracts.Contracts.IRenterService
 {
     private readonly IRepository<Renter, int> _repo;
     private readonly IRepository<Rental, int> _rentalRepo;
