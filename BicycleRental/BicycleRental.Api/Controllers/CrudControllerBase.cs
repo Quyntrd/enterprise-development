@@ -22,17 +22,44 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(IApplicat
     [ProducesResponseType(500)]
     public ActionResult<TDto> Create(TCreateUpdateDto newDto)
     {
-        logger.LogInformation("{method} called on {controller} with payload {@dto}", nameof(Create), GetType().Name, newDto);
+        logger.LogInformation("{method} method of {controller} is called with {@dto} parameter", nameof(Create), GetType().Name, newDto);
         try
         {
             var res = appService.Create(newDto);
-            logger.LogInformation("{method} executed successfully on {controller}", nameof(Create), GetType().Name);
-            return CreatedAtAction(nameof(Get), new { id = (object?)null }, res);
+            logger.LogInformation("{method} method of {controller} executed successfully", nameof(Create), GetType().Name);
+
+            if (res == null)
+            {
+                // If service unexpectedly returned null, fallback to 204/500 as you prefer.
+                return StatusCode(500, "Created resource is null.");
+            }
+
+            // Try to get Id property from returned DTO via reflection.
+            // This assumes DTO contains a property named "Id".
+            var idProp = res.GetType().GetProperty("Id");
+            if (idProp != null)
+            {
+                var idValue = idProp.GetValue(res);
+                if (idValue != null)
+                {
+                    // CreatedAtAction will build Location header using route to Get action and id value.
+                    return CreatedAtAction(nameof(Get), new { id = idValue }, res);
+                }
+            }
+
+            // Fallback: DTO does not have Id or Id is null — return Created without route-location.
+            return Created(string.Empty, res);
+        }
+        catch (ArgumentException argEx)
+        {
+            // Validation errors from mapping/parsing -> 400 Bad Request
+            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(Create), GetType().Name);
+            return BadRequest(argEx.Message);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Exception in {method} of {controller}", nameof(Create), GetType().Name);
-            return StatusCode(500, ex.Message);
+            logger.LogError("An exception happened during {method} method of {controller}: {@exception}", nameof(Create), GetType().Name, ex);
+            return StatusCode(500, $"{ex.Message}\n\r{ex.InnerException?.Message}");
         }
     }
 

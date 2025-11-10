@@ -35,10 +35,9 @@ public class BicycleModelInMemoryRepository : IRepository<BicycleModel, int>
     }
 
     /// <inheritdoc/>
-    public BicycleModel Read(int entityId)
+    public BicycleModel? Read(int entityId)
     {
-        // Will throw if not found, consistent with example style.
-        return _models.First(m => m.Id == entityId);
+        return _models.FirstOrDefault(m => m.Id == entityId);
     }
 
     /// <inheritdoc/>

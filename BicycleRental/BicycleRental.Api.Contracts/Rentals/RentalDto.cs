@@ -1,7 +1,7 @@
 ﻿namespace BicycleRental.Api.Contracts.Rentals;
 /// <summary>
-/// DTO for GET responses for rentals
-/// PricePerHour and TotalPrice are returned to client (calculated by service)
+/// DTO for GET responses for rentals.
+/// PricePerHour and TotalPrice are returned to client (calculated by service).
 /// </summary>
 /// <param name="Id">Identifier of the rental</param>
 /// <param name="BicycleId">Identifier of bicycle</param>
@@ -16,5 +16,5 @@ public record RentalDto(
     int RenterId,
     DateTime StartAt,
     TimeSpan DurationHours,
-    decimal PricePerHour,
-    decimal TotalPrice);
+    decimal PricePerHour = 0m,
+    decimal TotalPrice = 0m);

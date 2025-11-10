@@ -35,9 +35,9 @@ public class BicycleInMemoryRepository : IRepository<Bicycle, int>
     }
 
     /// <inheritdoc/>
-    public Bicycle Read(int entityId)
+    public Bicycle? Read(int entityId)
     {
-        return _bicycles.First(b => b.Id == entityId);
+        return _bicycles.FirstOrDefault(b => b.Id == entityId);
     }
 
     /// <inheritdoc/>

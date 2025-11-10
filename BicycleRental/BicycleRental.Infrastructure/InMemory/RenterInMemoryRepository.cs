@@ -35,9 +35,9 @@ public class RenterInMemoryRepository : IRepository<Renter, int>
     }
 
     /// <inheritdoc/>
-    public Renter Read(int entityId)
+    public Renter? Read(int entityId)
     {
-        return _renters.First(r => r.Id == entityId);
+        return _renters.FirstOrDefault(r => r.Id == entityId);
     }
 
     /// <inheritdoc/>
