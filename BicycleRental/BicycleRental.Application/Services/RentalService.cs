@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BicycleRental.Api.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Rentals;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 
@@ -9,7 +9,7 @@ namespace BicycleRental.Application.Services;
 /// Application service for rentals (CRUD + queries by bicycle/renter).
 /// Price calculations are performed here using the current price in BicycleModel repository.
 /// </summary>
-public class RentalService : Api.Contracts.Contracts.IRentalService
+public class RentalService : Contracts.Contracts.IRentalService
 {
     private readonly IRepository<Rental, int> _rentalRepo;
     private readonly IRepository<Bicycle, int> _bicycleRepo;

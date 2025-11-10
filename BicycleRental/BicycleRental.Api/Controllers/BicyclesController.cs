@@ -1,6 +1,6 @@
-﻿using BicycleRental.Api.Contracts.Bicycles;
-using BicycleRental.Api.Contracts.Contracts;
-using BicycleRental.Api.Contracts.Rentals;
+﻿using BicycleRental.Application.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.Contracts;
+using BicycleRental.Application.Contracts.Rentals;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BicycleRental.Api.Controllers;

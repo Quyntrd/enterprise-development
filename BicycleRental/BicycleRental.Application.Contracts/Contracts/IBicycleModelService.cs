@@ -1,13 +1,14 @@
-﻿using BicycleRental.Api.Contracts.Bicycles;
+﻿using BicycleRental.Application.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.BicycleModels;
 
-namespace BicycleRental.Api.Contracts.Contracts;
+namespace BicycleRental.Application.Contracts.Contracts;
 
 /// <summary>
 /// Application service for bicycle models.
 /// </summary>
 public interface IBicycleModelService : IApplicationService<
-    BicycleModels.BicycleModelDto,
-    BicycleModels.BicycleModelCreateUpdateDto,
+    BicycleModelDto,
+    BicycleModelCreateUpdateDto,
     int>
 {
     /// <summary>

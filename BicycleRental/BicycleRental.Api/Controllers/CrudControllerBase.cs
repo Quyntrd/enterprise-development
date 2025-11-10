@@ -1,4 +1,4 @@
-using BicycleRental.Api.Contracts.Contracts;
+using BicycleRental.Application.Contracts.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BicycleRental.Api.Controllers;

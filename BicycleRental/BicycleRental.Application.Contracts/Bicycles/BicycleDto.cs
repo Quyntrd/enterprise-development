@@ -1,4 +1,4 @@
-﻿namespace BicycleRental.Api.Contracts.Bicycles;
+﻿namespace BicycleRental.Application.Contracts.Bicycles;
 /// <summary>
 /// DTO for GET responses for bicycles
 /// </summary>

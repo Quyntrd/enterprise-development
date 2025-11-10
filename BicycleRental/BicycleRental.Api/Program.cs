@@ -4,7 +4,7 @@ using BicycleRental.Application.Mapping;
 using BicycleRental.Infrastructure.InMemory;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
-using BicycleRental.Api.Contracts.Contracts;
+using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Application.Services;
 using Microsoft.OpenApi.Models;
 

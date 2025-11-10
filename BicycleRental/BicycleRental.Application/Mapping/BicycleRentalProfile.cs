@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using BicycleRental.Api.Contracts.BicycleModels;
-using BicycleRental.Api.Contracts.Bicycles;
-using BicycleRental.Api.Contracts.Rentals;
-using BicycleRental.Api.Contracts.Renters;
+using BicycleRental.Application.Contracts.BicycleModels;
+using BicycleRental.Application.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Renters;
 using BicycleRental.Domain.Models;
 
 namespace BicycleRental.Application.Mapping;

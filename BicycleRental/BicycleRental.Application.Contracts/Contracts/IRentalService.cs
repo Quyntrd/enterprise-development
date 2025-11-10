@@ -1,6 +1,6 @@
-﻿using BicycleRental.Api.Contracts.Rentals;
+﻿using BicycleRental.Application.Contracts.Rentals;
 
-namespace BicycleRental.Api.Contracts.Contracts;
+namespace BicycleRental.Application.Contracts.Contracts;
 
 /// <summary>
 /// Application service for rentals.

@@ -9,6 +9,7 @@ namespace BicycleRental.Api.Swagger;
 /// </summary>
 public class TimeSpanSchemaFilter : ISchemaFilter
 {
+    /// <inheritdoc/>
     public void Apply(OpenApiSchema schema, SchemaFilterContext context)
     {
         if (context.Type == typeof(TimeSpan) || context.Type == typeof(TimeSpan?))

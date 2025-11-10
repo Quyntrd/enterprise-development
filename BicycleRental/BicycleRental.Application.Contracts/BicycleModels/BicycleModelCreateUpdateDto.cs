@@ -1,4 +1,4 @@
-﻿namespace BicycleRental.Api.Contracts.BicycleModels;
+﻿namespace BicycleRental.Application.Contracts.BicycleModels;
 using BicycleRental.Domain.Enums;
 /// <summary>
 /// DTO for POST/PUT requests for bicycle models

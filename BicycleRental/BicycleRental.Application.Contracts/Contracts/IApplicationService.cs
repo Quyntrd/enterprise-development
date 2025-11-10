@@ -1,4 +1,4 @@
-﻿namespace BicycleRental.Api.Contracts.Contracts;
+﻿namespace BicycleRental.Application.Contracts.Contracts;
 
 /// <summary>
 /// Generic application service interface for CRUD operations.

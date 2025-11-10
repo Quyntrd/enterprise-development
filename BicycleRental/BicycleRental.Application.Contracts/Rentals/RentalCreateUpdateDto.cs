@@ -1,4 +1,4 @@
-﻿namespace BicycleRental.Api.Contracts.Rentals;
+﻿namespace BicycleRental.Application.Contracts.Rentals;
 /// <summary>
 /// DTO for POST/PUT requests for rentals
 /// </summary>

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BicycleRental.Api.Contracts.BicycleModels;
-using BicycleRental.Api.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.BicycleModels;
+using BicycleRental.Application.Contracts.Bicycles;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 
@@ -12,7 +12,7 @@ namespace BicycleRental.Application.Services;
 /// <remarks>
 /// Depends on a repository for BicycleModel and a repository for Bicycle to return related entities.
 /// </remarks>
-public class BicycleModelService : Api.Contracts.Contracts.IBicycleModelService
+public class BicycleModelService : Contracts.Contracts.IBicycleModelService
 {
     private readonly IRepository<BicycleModel, int> _modelRepo;
     private readonly IRepository<Bicycle, int> _bicycleRepo;

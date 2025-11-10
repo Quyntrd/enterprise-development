@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BicycleRental.Api.Contracts.Renters;
-using BicycleRental.Api.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Renters;
+using BicycleRental.Application.Contracts.Rentals;
 using BicycleRental.Domain.Models;
 using BicycleRental.Domain;
 
@@ -9,7 +9,7 @@ namespace BicycleRental.Application.Services;
 /// <summary>
 /// Application service for renters (clients).
 /// </summary>
-public class RenterService : Api.Contracts.Contracts.IRenterService
+public class RenterService : Contracts.Contracts.IRenterService
 {
     private readonly IRepository<Renter, int> _repo;
     private readonly IRepository<Rental, int> _rentalRepo;

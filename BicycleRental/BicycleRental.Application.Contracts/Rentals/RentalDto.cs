@@ -1,4 +1,4 @@
-﻿namespace BicycleRental.Api.Contracts.Rentals;
+﻿namespace BicycleRental.Application.Contracts.Rentals;
 /// <summary>
 /// DTO for GET responses for rentals.
 /// PricePerHour and TotalPrice are returned to client (calculated by service).
