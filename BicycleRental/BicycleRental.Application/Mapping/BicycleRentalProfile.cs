@@ -12,6 +12,10 @@ namespace BicycleRental.Application.Mapping;
 /// </summary>
 public class BicycleRentalProfile : Profile
 {
+    /// <summary>
+    /// Configures mappings between domain models and DTOs for the BicycleRental application.
+    /// Includes mappings for BicycleModel, Bicycle, Renter, and Rental entities.
+    /// </summary>
     public BicycleRentalProfile()
     {
         CreateMap<BicycleModel, BicycleModelDto>();
