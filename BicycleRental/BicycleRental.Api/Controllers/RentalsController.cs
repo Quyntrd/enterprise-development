@@ -8,7 +8,5 @@ namespace BicycleRental.Api.Controllers;
 /// </summary>
 /// <param name="service">Application service for rentals.</param>
 /// <param name="logger">Logger instance.</param>
-public class RentalsController(IRentalService service, ILogger<RentalsController> logger) : CrudControllerBase<RentalDto, RentalCreateUpdateDto, int>(service, logger)
-{
-    // No additional endpoints here for now.
-}
+public class RentalsController(IRentalService service, ILogger<RentalsController> logger) : CrudControllerBase<RentalDto, RentalCreateUpdateDto, int>(service, logger);
+

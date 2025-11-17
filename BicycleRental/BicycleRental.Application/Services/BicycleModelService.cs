@@ -22,9 +22,9 @@ public class BicycleModelService(
     IRepository<Bicycle, int> bicycleRepo,
     IMapper mapper) : IBicycleModelService
 {
-    private readonly IRepository<BicycleModel, int> _modelRepo = modelRepo;
-    private readonly IRepository<Bicycle, int> _bicycleRepo = bicycleRepo;
-    private readonly IMapper _mapper = mapper;
+    private IRepository<BicycleModel, int> _modelRepo = modelRepo;
+    private IRepository<Bicycle, int> _bicycleRepo = bicycleRepo;
+    private IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public BicycleModelDto Create(BicycleModelCreateUpdateDto dto)

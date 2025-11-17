@@ -156,7 +156,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     [HttpGet("{id}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(204)]
-    [ProducesResponseType(500)]
+    [ProducesResponseType(404)]
     public ActionResult<TDto> Get(TKey id)
     {
         logger.LogInformation("{method} called on {controller} with id={id}", nameof(Get), GetType().Name, id);
@@ -169,7 +169,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
         catch (Exception ex)
         {
             logger.LogError(ex, "Exception in {method} of {controller}", nameof(Get), GetType().Name);
-            return StatusCode(500, ex.Message);
+            return StatusCode(404, ex.Message);
         }
     }
 }

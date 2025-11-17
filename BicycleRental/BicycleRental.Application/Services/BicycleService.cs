@@ -14,8 +14,8 @@ namespace BicycleRental.Application.Services;
 /// </remarks>
 public class BicycleService(IRepository<Bicycle, int> repo, IMapper mapper) : IBicycleService
 {
-    private readonly IRepository<Bicycle, int> _repo = repo;
-    private readonly IMapper _mapper = mapper;
+    private IRepository<Bicycle, int> _repo = repo;
+    private IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public BicycleDto Create(BicycleCreateUpdateDto dto)

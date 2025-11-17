@@ -19,10 +19,10 @@ public class RentalService(
     IRepository<BicycleModel, int> modelRepo,
     IMapper mapper) : IRentalService
 {
-    private readonly IRepository<Rental, int> _rentalRepo = rentalRepo;
-    private readonly IRepository<Bicycle, int> _bicycleRepo = bicycleRepo;
-    private readonly IRepository<BicycleModel, int> _modelRepo = modelRepo;
-    private readonly IMapper _mapper = mapper;
+    private IRepository<Rental, int> _rentalRepo = rentalRepo;
+    private IRepository<Bicycle, int> _bicycleRepo = bicycleRepo;
+    private IRepository<BicycleModel, int> _modelRepo = modelRepo;
+    private IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public RentalDto Create(RentalCreateUpdateDto dto)

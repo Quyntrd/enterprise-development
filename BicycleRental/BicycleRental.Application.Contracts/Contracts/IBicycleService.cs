@@ -6,7 +6,7 @@ namespace BicycleRental.Application.Contracts.Contracts;
 /// Application service for bicycles.
 /// </summary>
 public interface IBicycleService : IApplicationService<
-    Bicycles.BicycleDto,
+    BicycleDto,
     BicycleCreateUpdateDto,
     int>
 {
@@ -15,5 +15,5 @@ public interface IBicycleService : IApplicationService<
     /// </summary>
     /// <param name="modelId">Model identifier</param>
     /// <returns>List of BicycleDto</returns>
-    public List<Bicycles.BicycleDto> GetByModelId(int modelId);
+    public List<BicycleDto> GetByModelId(int modelId);
 }
