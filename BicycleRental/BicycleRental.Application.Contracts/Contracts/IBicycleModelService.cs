@@ -1,5 +1,5 @@
-﻿using BicycleRental.Application.Contracts.Bicycles;
-using BicycleRental.Application.Contracts.BicycleModels;
+﻿using BicycleRental.Application.Contracts.BicycleModels;
+using BicycleRental.Application.Contracts.Bicycles;
 
 namespace BicycleRental.Application.Contracts.Contracts;
 

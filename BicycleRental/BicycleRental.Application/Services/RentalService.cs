@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using BicycleRental.Application.Contracts.Rentals;
 using BicycleRental.Application.Contracts.Contracts;
+using BicycleRental.Application.Contracts.Rentals;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 

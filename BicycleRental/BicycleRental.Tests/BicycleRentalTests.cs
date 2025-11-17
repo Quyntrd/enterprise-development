@@ -1,5 +1,5 @@
-using BicycleRental.Domain.Enums;
 using BicycleRental.Domain.DataSeed;
+using BicycleRental.Domain.Enums;
 
 namespace BicycleRental.Tests;
 

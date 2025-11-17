@@ -1,6 +1,6 @@
-﻿using BicycleRental.Domain.DataSeed;
+﻿using BicycleRental.Domain;
+using BicycleRental.Domain.DataSeed;
 using BicycleRental.Domain.Models;
-using BicycleRental.Domain;
 
 namespace BicycleRental.Infrastructure.InMemory;
 
