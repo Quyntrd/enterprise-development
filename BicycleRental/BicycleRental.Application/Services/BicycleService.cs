@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BicycleRental.Application.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 
@@ -8,19 +9,13 @@ namespace BicycleRental.Application.Services;
 /// <summary>
 /// Application service for bicycles (CRUD + queries by model).
 /// </summary>
-public class BicycleService : Contracts.Contracts.IBicycleService
+/// <remarks>
+/// Constructor.
+/// </remarks>
+public class BicycleService(IRepository<Bicycle, int> repo, IMapper mapper) : IBicycleService
 {
-    private readonly IRepository<Bicycle, int> _repo;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public BicycleService(IRepository<Bicycle, int> repo, IMapper mapper)
-    {
-        _repo = repo;
-        _mapper = mapper;
-    }
+    private readonly IRepository<Bicycle, int> _repo = repo;
+    private readonly IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public BicycleDto Create(BicycleCreateUpdateDto dto)

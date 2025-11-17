@@ -14,7 +14,7 @@
 public record BicycleModelDto(
     int Id,
     string? Name,
-    string? Type,
+    int? Type,
     double? WheelSizeInInches,
     double? MaxPassengerWeightKg,
     double? WeightKg,

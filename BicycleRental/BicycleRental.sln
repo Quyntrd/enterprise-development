@@ -9,11 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Tests", "Bicy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Application", "BicycleRental.Application\BicycleRental.Application.csproj", "{74AAC8A3-E9EF-41A2-907D-36B10B78CD77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Infrastructure", "BicycleRental.Infrastructure\BicycleRental.Infrastructure.csproj", "{4374F840-71AE-403E-8AD6-BAF51A4DD686}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Api", "BicycleRental.Api\BicycleRental.Api.csproj", "{71ECEC4C-8424-4695-A96A-F1FAB4358FFA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Application.Contracts", "BicycleRental.Application.Contracts\BicycleRental.Application.Contracts.csproj", "{BD1DB85E-0725-4BA7-8F15-3E9C70D5AA69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Infrastructure.InMemory", "BicycleRental.Infrastructure.InMemory\BicycleRental.Infrastructure.InMemory.csproj", "{E8BB0863-7C27-C254-7916-FBC6B3906C83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,10 +33,6 @@ Global
 		{74AAC8A3-E9EF-41A2-907D-36B10B78CD77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74AAC8A3-E9EF-41A2-907D-36B10B78CD77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74AAC8A3-E9EF-41A2-907D-36B10B78CD77}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4374F840-71AE-403E-8AD6-BAF51A4DD686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4374F840-71AE-403E-8AD6-BAF51A4DD686}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4374F840-71AE-403E-8AD6-BAF51A4DD686}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4374F840-71AE-403E-8AD6-BAF51A4DD686}.Release|Any CPU.Build.0 = Release|Any CPU
 		{71ECEC4C-8424-4695-A96A-F1FAB4358FFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{71ECEC4C-8424-4695-A96A-F1FAB4358FFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71ECEC4C-8424-4695-A96A-F1FAB4358FFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +41,10 @@ Global
 		{BD1DB85E-0725-4BA7-8F15-3E9C70D5AA69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD1DB85E-0725-4BA7-8F15-3E9C70D5AA69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD1DB85E-0725-4BA7-8F15-3E9C70D5AA69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8BB0863-7C27-C254-7916-FBC6B3906C83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8BB0863-7C27-C254-7916-FBC6B3906C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8BB0863-7C27-C254-7916-FBC6B3906C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8BB0863-7C27-C254-7916-FBC6B3906C83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

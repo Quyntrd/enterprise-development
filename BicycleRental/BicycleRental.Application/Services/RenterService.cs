@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BicycleRental.Application.Contracts.Renters;
 using BicycleRental.Application.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Domain.Models;
 using BicycleRental.Domain;
 
@@ -9,21 +10,14 @@ namespace BicycleRental.Application.Services;
 /// <summary>
 /// Application service for renters (clients).
 /// </summary>
-public class RenterService : Contracts.Contracts.IRenterService
+/// <remarks>
+/// Constructor.
+/// </remarks>
+public class RenterService(IRepository<Renter, int> repo, IRepository<Rental, int> rentalRepo, IMapper mapper) : IRenterService
 {
-    private readonly IRepository<Renter, int> _repo;
-    private readonly IRepository<Rental, int> _rentalRepo;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public RenterService(IRepository<Renter, int> repo, IRepository<Rental, int> rentalRepo, IMapper mapper)
-    {
-        _repo = repo;
-        _rentalRepo = rentalRepo;
-        _mapper = mapper;
-    }
+    private readonly IRepository<Renter, int> _repo = repo;
+    private readonly IRepository<Rental, int> _rentalRepo = rentalRepo;
+    private readonly IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public RenterDto Create(RenterCreateUpdateDto dto)

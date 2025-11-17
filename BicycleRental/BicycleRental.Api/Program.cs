@@ -1,12 +1,12 @@
 using System.Reflection;
 using AutoMapper;
 using BicycleRental.Application.Mapping;
-using BicycleRental.Infrastructure.InMemory;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Application.Services;
 using Microsoft.OpenApi.Models;
+using BicycleRental.Infrastructure.InMemory;
 
 var builder = WebApplication.CreateBuilder(args);
 

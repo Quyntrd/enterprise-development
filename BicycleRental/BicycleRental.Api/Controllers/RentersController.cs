@@ -22,6 +22,7 @@ public class RentersController(IRenterService service, IRentalService rentalServ
     [HttpGet("{id}/rentals")]
     [ProducesResponseType(200)]
     [ProducesResponseType(204)]
+    [ProducesResponseType(500)]
     public ActionResult<IList<RentalDto>> GetRentals(int id)
     {
         logger.LogInformation("{method} called on {controller} with id={id}", nameof(GetRentals), GetType().Name, id);

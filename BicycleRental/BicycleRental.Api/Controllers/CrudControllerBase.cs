@@ -72,6 +72,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     /// <returns>Updated DTO.</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     [ProducesResponseType(500)]
     public ActionResult<TDto> Edit(TKey id, TCreateUpdateDto newDto)
     {
@@ -101,6 +102,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     /// <returns>HTTP status indicating outcome.</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     [ProducesResponseType(500)]
     public IActionResult Delete(TKey id)
     {

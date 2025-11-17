@@ -9,15 +9,7 @@ namespace BicycleRental.Infrastructure.InMemory;
 /// </summary>
 public class RenterInMemoryRepository : IRepository<Renter, int>
 {
-    private readonly List<Renter> _renters;
-
-    /// <summary>
-    /// Constructor initializes repository from data seed.
-    /// </summary>
-    public RenterInMemoryRepository()
-    {
-        _renters = new BicycleRentalDataSeed().Renters;
-    }
+    private readonly List<Renter> _renters = new BicycleRentalDataSeed().Renters;
 
     /// <inheritdoc/>
     public Renter Create(Renter entity)

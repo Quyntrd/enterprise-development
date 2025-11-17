@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BicycleRental.Application.Contracts.BicycleModels;
 using BicycleRental.Application.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
+
 
 namespace BicycleRental.Application.Services;
 
@@ -12,24 +14,17 @@ namespace BicycleRental.Application.Services;
 /// <remarks>
 /// Depends on a repository for BicycleModel and a repository for Bicycle to return related entities.
 /// </remarks>
-public class BicycleModelService : Contracts.Contracts.IBicycleModelService
+/// <remarks>
+/// Constructor.
+/// </remarks>
+public class BicycleModelService(
+    IRepository<BicycleModel, int> modelRepo,
+    IRepository<Bicycle, int> bicycleRepo,
+    IMapper mapper) : IBicycleModelService
 {
-    private readonly IRepository<BicycleModel, int> _modelRepo;
-    private readonly IRepository<Bicycle, int> _bicycleRepo;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public BicycleModelService(
-        IRepository<BicycleModel, int> modelRepo,
-        IRepository<Bicycle, int> bicycleRepo,
-        IMapper mapper)
-    {
-        _modelRepo = modelRepo;
-        _bicycleRepo = bicycleRepo;
-        _mapper = mapper;
-    }
+    private readonly IRepository<BicycleModel, int> _modelRepo = modelRepo;
+    private readonly IRepository<Bicycle, int> _bicycleRepo = bicycleRepo;
+    private readonly IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public BicycleModelDto Create(BicycleModelCreateUpdateDto dto)

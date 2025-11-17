@@ -15,5 +15,5 @@ public interface IRenterService : IApplicationService<
     /// </summary>
     /// <param name="dtoId">Renter identifier</param>
     /// <returns>List of RentalDto</returns>
-    List<RentalDto> GetRentals(int dtoId);
+    public List<RentalDto> GetRentals(int dtoId);
 }

@@ -20,6 +20,7 @@ public class BicycleModelsController(IBicycleModelService service, ILogger<Bicyc
     [HttpGet("{id}/bicycles")]
     [ProducesResponseType(200)]
     [ProducesResponseType(204)]
+    [ProducesResponseType(500)]
     public ActionResult<IList<BicycleDto>> GetBicycles(int id)
     {
         logger.LogInformation("{method} called on {controller} with id={id}", nameof(GetBicycles), GetType().Name, id);

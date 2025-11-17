@@ -1,5 +1,4 @@
 ﻿namespace BicycleRental.Application.Contracts.BicycleModels;
-using BicycleRental.Domain.Enums;
 /// <summary>
 /// DTO for POST/PUT requests for bicycle models
 /// </summary>
@@ -13,7 +12,7 @@ using BicycleRental.Domain.Enums;
 /// <param name="PricePerHour">Rental price per hour</param>
 public record BicycleModelCreateUpdateDto(
     string? Name,
-    BicycleType Type,
+    int? Type,
     double? WheelSizeInInches,
     double? MaxPassengerWeightKg,
     double? WeightKg,

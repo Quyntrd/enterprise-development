@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BicycleRental.Application.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 
@@ -9,27 +10,19 @@ namespace BicycleRental.Application.Services;
 /// Application service for rentals (CRUD + queries by bicycle/renter).
 /// Price calculations are performed here using the current price in BicycleModel repository.
 /// </summary>
-public class RentalService : Contracts.Contracts.IRentalService
+/// <remarks>
+/// Constructor.
+/// </remarks>
+public class RentalService(
+    IRepository<Rental, int> rentalRepo,
+    IRepository<Bicycle, int> bicycleRepo,
+    IRepository<BicycleModel, int> modelRepo,
+    IMapper mapper) : IRentalService
 {
-    private readonly IRepository<Rental, int> _rentalRepo;
-    private readonly IRepository<Bicycle, int> _bicycleRepo;
-    private readonly IRepository<BicycleModel, int> _modelRepo;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    public RentalService(
-        IRepository<Rental, int> rentalRepo,
-        IRepository<Bicycle, int> bicycleRepo,
-        IRepository<BicycleModel, int> modelRepo,
-        IMapper mapper)
-    {
-        _rentalRepo = rentalRepo;
-        _bicycleRepo = bicycleRepo;
-        _modelRepo = modelRepo;
-        _mapper = mapper;
-    }
+    private readonly IRepository<Rental, int> _rentalRepo = rentalRepo;
+    private readonly IRepository<Bicycle, int> _bicycleRepo = bicycleRepo;
+    private readonly IRepository<BicycleModel, int> _modelRepo = modelRepo;
+    private readonly IMapper _mapper = mapper;
 
     /// <inheritdoc/>
     public RentalDto Create(RentalCreateUpdateDto dto)

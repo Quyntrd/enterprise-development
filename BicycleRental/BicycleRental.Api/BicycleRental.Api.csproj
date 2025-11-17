@@ -19,7 +19,7 @@
     <ProjectReference Include="..\BicycleRental.Application.Contracts\BicycleRental.Application.Contracts.csproj" />
     <ProjectReference Include="..\BicycleRental.Application\BicycleRental.Application.csproj" />
     <ProjectReference Include="..\BicycleRental.Domain\BicycleRental.Domain.csproj" />
-    <ProjectReference Include="..\BicycleRental.Infrastructure\BicycleRental.Infrastructure.csproj" />
+    <ProjectReference Include="..\BicycleRental.Infrastructure.InMemory\BicycleRental.Infrastructure.InMemory.csproj" />
   </ItemGroup>
 
 </Project>
