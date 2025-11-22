@@ -9,49 +9,53 @@ namespace BicycleRental.Application.Services;
 /// <summary>
 /// Application service for bicycles (CRUD + queries by model).
 /// </summary>
-/// <remarks>
-/// Constructor.
-/// </remarks>
 public class BicycleService(IRepository<Bicycle, int> repo, IMapper mapper) : IBicycleService
 {
     private IRepository<Bicycle, int> _repo = repo;
     private IMapper _mapper = mapper;
 
     /// <inheritdoc/>
-    public BicycleDto Create(BicycleCreateUpdateDto dto)
+    public async Task<BicycleDto> Create(BicycleCreateUpdateDto dto)
     {
         var entity = _mapper.Map<Bicycle>(dto);
-        var all = _repo.ReadAll();
+        var all = await _repo.ReadAll();
         var lastId = all.Count != 0 ? all.Max(b => b.Id) : 0;
         entity.Id = lastId + 1;
-        _repo.Create(entity);
+        await _repo.Create(entity);
         return _mapper.Map<BicycleDto>(entity);
     }
 
     /// <inheritdoc/>
-    public void Delete(int dtoId) => _repo.Delete(dtoId);
+    public async Task<bool> Delete(int dtoId) => await _repo.Delete(dtoId);
 
     /// <inheritdoc/>
-    public BicycleDto Get(int dtoId) =>
-        _mapper.Map<BicycleDto>(_repo.Read(dtoId) ?? throw new KeyNotFoundException("Bicycle not found"));
-
-    /// <inheritdoc/>
-    public List<BicycleDto> GetAll() =>
-        _mapper.Map<List<BicycleDto>>(_repo.ReadAll());
-
-    /// <inheritdoc/>
-    public BicycleDto Update(BicycleCreateUpdateDto dto, int dtoId)
+    public async Task<BicycleDto> Get(int dtoId)
     {
-        var upd = _mapper.Map<Bicycle>(dto);
-        upd.Id = dtoId;
-        _repo.Update(upd);
-        return _mapper.Map<BicycleDto>(upd);
+        var entity = await _repo.Read(dtoId)
+            ?? throw new KeyNotFoundException("Bicycle not found");
+        return _mapper.Map<BicycleDto>(entity);
     }
 
     /// <inheritdoc/>
-    public List<BicycleDto> GetByModelId(int modelId)
+    public async Task<List<BicycleDto>> GetAll()
     {
-        var list = _repo.ReadAll().Where(b => b.ModelId == modelId).ToList();
+        var list = await _repo.ReadAll();
+        return _mapper.Map<List<BicycleDto>>(list);
+    }
+
+    /// <inheritdoc/>
+    public async Task<BicycleDto> Update(BicycleCreateUpdateDto dto, int dtoId)
+    {
+        var upd = _mapper.Map<Bicycle>(dto);
+        upd.Id = dtoId;
+        var updated = await _repo.Update(upd);
+        return _mapper.Map<BicycleDto>(updated);
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<BicycleDto>> GetByModelId(int modelId)
+    {
+        var list = (await _repo.ReadAll()).Where(b => b.ModelId == modelId).ToList();
         return _mapper.Map<List<BicycleDto>>(list);
     }
 }

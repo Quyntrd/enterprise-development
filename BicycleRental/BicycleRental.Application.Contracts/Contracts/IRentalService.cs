@@ -15,12 +15,12 @@ public interface IRentalService : IApplicationService<
     /// </summary>
     /// <param name="bicycleId">Bicycle identifier</param>
     /// <returns>List of RentalDto</returns>
-    public List<RentalDto> GetByBicycleId(int bicycleId);
+    public Task<List<RentalDto>> GetByBicycleId(int bicycleId);
 
     /// <summary>
     /// Get rentals by renter id
     /// </summary>
     /// <param name="renterId">Renter identifier</param>
     /// <returns>List of RentalDto</returns>
-    public List<RentalDto> GetByRenterId(int renterId);
+    public Task<List<RentalDto>> GetByRenterId(int renterId);
 }

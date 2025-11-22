@@ -23,12 +23,12 @@ public class BicyclesController(IBicycleService service, IRentalService rentalSe
     [ProducesResponseType(200)]
     [ProducesResponseType(204)]
     [ProducesResponseType(500)]
-    public ActionResult<IList<RentalDto>> GetRentals(int id)
+    public async Task<ActionResult<IList<RentalDto>>> GetRentals(int id)
     {
         logger.LogInformation("{method} called on {controller} with id={id}", nameof(GetRentals), GetType().Name, id);
         try
         {
-            var res = rentalService.GetByBicycleId(id);
+            var res = await rentalService.GetByBicycleId(id);
             return res != null && res.Count > 0 ? Ok(res) : NoContent();
         }
         catch (Exception ex)

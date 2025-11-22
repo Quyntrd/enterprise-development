@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.20">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
@@ -15,7 +23,7 @@
     <ProjectReference Include="..\BicycleRental.Application.Contracts\BicycleRental.Application.Contracts.csproj" />
     <ProjectReference Include="..\BicycleRental.Application\BicycleRental.Application.csproj" />
     <ProjectReference Include="..\BicycleRental.Domain\BicycleRental.Domain.csproj" />
-    <ProjectReference Include="..\BicycleRental.Infrastructure.InMemory\BicycleRental.Infrastructure.InMemory.csproj" />
+    <ProjectReference Include="..\BicycleRental.Infrastructure.EfCore\BicycleRental.Infrastructure.EfCore.csproj" />
   </ItemGroup>
 
 </Project>

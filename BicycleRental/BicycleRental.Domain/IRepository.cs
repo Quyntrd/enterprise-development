@@ -1,43 +1,43 @@
 ﻿namespace BicycleRental.Domain;
 
 /// <summary>
-/// Generic repository interface used by application services to perform data access.
+/// Generic asynchronous repository interface used by application services to perform data access.
 /// </summary>
-/// <typeparam name="TEntity">Domain entity type.</typeparam>
-/// <typeparam name="TKey">Type of the entity key (for this project typically <c>int</c>).</typeparam>
+/// <typeparam name="TEntity">Domain entity type</typeparam>
+/// <typeparam name="TKey">Key type (int)</typeparam>
 public interface IRepository<TEntity, TKey>
     where TEntity : class
     where TKey : struct
 {
     /// <summary>
-    /// Create a new entity in the repository.
+    /// Create a new entity and persist it.
     /// </summary>
     /// <param name="entity">Entity to create.</param>
-    /// <returns>The created entity (may include assigned key).</returns>
-    public TEntity Create(TEntity entity);
+    /// <returns>Created entity (with generated key).</returns>
+    public Task<TEntity> Create(TEntity entity);
 
     /// <summary>
-    /// Update an existing entity in the repository.
+    /// Update existing entity.
     /// </summary>
-    /// <param name="entity">Entity with updated values (must contain identifier).</param>
-    public void Update(TEntity entity);
+    /// <param name="entity">Entity with updated values.</param>
+    public Task<TEntity> Update(TEntity entity);
 
     /// <summary>
-    /// Delete an entity by identifier.
+    /// Delete entity by id.
     /// </summary>
-    /// <param name="id">Identifier of the entity to delete.</param>
-    public void Delete(TKey id);
+    /// <param name="id">Identifier of entity.</param>
+    public Task<bool> Delete(TKey id);
 
     /// <summary>
-    /// Read an entity by identifier.
+    /// Read entity by id.
     /// </summary>
-    /// <param name="id">Identifier of the entity to read.</param>
-    /// <returns>The entity if found; otherwise <c>null</c>.</returns>
-    public TEntity? Read(TKey id);
+    /// <param name="id">Identifier.</param>
+    /// <returns>Entity or null if not found.</returns>
+    public Task<TEntity?> Read(TKey id);
 
     /// <summary>
-    /// Read all entities from the repository.
+    /// Read all entities.
     /// </summary>
-    /// <returns>List of all entities.</returns>
-    public List<TEntity> ReadAll();
+    /// <returns>List of entities.</returns>
+    public Task<IList<TEntity>> ReadAll();
 }

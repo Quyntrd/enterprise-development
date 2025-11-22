@@ -12,36 +12,47 @@ public class RenterInMemoryRepository : IRepository<Renter, int>
     private readonly List<Renter> _renters = new BicycleRentalDataSeed().Renters;
 
     /// <inheritdoc/>
-    public Renter Create(Renter entity)
+    public Task<Renter> Create(Renter entity)
     {
         _renters.Add(entity);
-        return entity;
+        return Task.FromResult(entity);
     }
 
     /// <inheritdoc/>
-    public void Delete(int entityId)
+    public Task<bool> Delete(int id)
     {
-        var existing = Read(entityId);
+        var existing = _renters.FirstOrDefault(r => r.Id == id);
+        if (existing != null)
+        {
+            _renters.Remove(existing);
+            return Task.FromResult(true);
+        }
+
+        return Task.FromResult(false);
+    }
+
+    /// <inheritdoc/>
+    public Task<Renter?> Read(int id)
+    {
+        var result = _renters.FirstOrDefault(r => r.Id == id);
+        return Task.FromResult(result);
+    }
+
+    /// <inheritdoc/>
+    public Task<IList<Renter>> ReadAll()
+    {
+        IList<Renter> result = _renters.ToList();
+        return Task.FromResult(result);
+    }
+
+    /// <inheritdoc/>
+    public Task<Renter> Update(Renter entity)
+    {
+        var existing = _renters.FirstOrDefault(r => r.Id == entity.Id);
         if (existing != null)
             _renters.Remove(existing);
-    }
 
-    /// <inheritdoc/>
-    public Renter? Read(int entityId)
-    {
-        return _renters.FirstOrDefault(r => r.Id == entityId);
-    }
-
-    /// <inheritdoc/>
-    public List<Renter> ReadAll()
-    {
-        return _renters.ToList();
-    }
-
-    /// <inheritdoc/>
-    public void Update(Renter entity)
-    {
-        Delete(entity.Id);
-        Create(entity);
+        _renters.Add(entity);
+        return Task.FromResult(entity);
     }
 }

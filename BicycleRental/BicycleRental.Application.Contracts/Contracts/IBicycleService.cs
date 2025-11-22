@@ -15,5 +15,5 @@ public interface IBicycleService : IApplicationService<
     /// </summary>
     /// <param name="modelId">Model identifier</param>
     /// <returns>List of BicycleDto</returns>
-    public List<BicycleDto> GetByModelId(int modelId);
+    public Task<List<BicycleDto>> GetByModelId(int modelId);
 }

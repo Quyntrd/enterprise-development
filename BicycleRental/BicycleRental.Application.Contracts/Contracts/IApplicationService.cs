@@ -1,5 +1,8 @@
 ﻿namespace BicycleRental.Application.Contracts.Contracts;
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 /// <summary>
 /// Generic application service interface for CRUD operations.
 /// </summary>
@@ -16,20 +19,20 @@ public interface IApplicationService<TDto, TCreateUpdateDto, TKey>
     /// </summary>
     /// <param name="dto">Create DTO</param>
     /// <returns>Created DTO</returns>
-    public TDto Create(TCreateUpdateDto dto);
+    public Task<TDto> Create(TCreateUpdateDto dto);
 
     /// <summary>
     /// Get entity by id
     /// </summary>
     /// <param name="dtoId">Identifier</param>
     /// <returns>Returned DTO</returns>
-    public TDto Get(TKey dtoId);
+    public Task<TDto> Get(TKey dtoId);
 
     /// <summary>
     /// Get all entities
     /// </summary>
     /// <returns>List of DTOs</returns>
-    public List<TDto> GetAll();
+    public Task<List<TDto>> GetAll();
 
     /// <summary>
     /// Update entity
@@ -37,11 +40,11 @@ public interface IApplicationService<TDto, TCreateUpdateDto, TKey>
     /// <param name="dto">Update DTO</param>
     /// <param name="dtoId">Identifier to update</param>
     /// <returns>Updated DTO</returns>
-    public TDto Update(TCreateUpdateDto dto, TKey dtoId);
+    public Task<TDto> Update(TCreateUpdateDto dto, TKey dtoId);
 
     /// <summary>
     /// Delete entity by id
     /// </summary>
     /// <param name="dtoId">Identifier</param>
-    public void Delete(TKey dtoId);
+    public Task<bool> Delete(TKey dtoId);
 }

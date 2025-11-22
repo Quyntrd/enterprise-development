@@ -4,11 +4,14 @@ using BicycleRental.Application.Mapping;
 using BicycleRental.Application.Services;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
-using BicycleRental.Infrastructure.InMemory;
+using BicycleRental.Infrastructure.EfCore;
+using BicycleRental.Infrastructure.EfCore.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 var mapperConfig = new MapperConfiguration(cfg =>
     cfg.AddProfile(new BicycleRentalProfile()), LoggerFactory.Create(builder => builder.AddConsole())
@@ -16,10 +19,20 @@ var mapperConfig = new MapperConfiguration(cfg =>
 IMapper? mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
-builder.Services.AddSingleton<IRepository<BicycleModel, int>, BicycleModelInMemoryRepository>();
-builder.Services.AddSingleton<IRepository<Bicycle, int>, BicycleInMemoryRepository>();
-builder.Services.AddSingleton<IRepository<Renter, int>, RenterInMemoryRepository>();
-builder.Services.AddSingleton<IRepository<Rental, int>, RentalInMemoryRepository>();
+var conn = configuration.GetConnectionString("Default");
+if (string.IsNullOrWhiteSpace(conn))
+{
+    throw new InvalidOperationException("Connection string 'Default' is not configured. Please set it in appsettings.json or environment.");
+}
+var connectionString = "server=localhost;port=3306;database=BicycleRentalDb;user=root;password=1234";
+
+builder.Services.AddDbContext<BicycleRentalDbContext>(options =>
+    options.UseMySQL(connectionString));
+
+builder.Services.AddScoped<IRepository<BicycleModel, int>, BicycleModelEfCoreRepository>();
+builder.Services.AddScoped<IRepository<Bicycle, int>, BicycleEfCoreRepository>();
+builder.Services.AddScoped<IRepository<Renter, int>, RenterEfCoreRepository>();
+builder.Services.AddScoped<IRepository<Rental, int>, RentalEfCoreRepository>();
 
 builder.Services.AddScoped<IBicycleModelService, BicycleModelService>();
 builder.Services.AddScoped<IBicycleService, BicycleService>();
@@ -41,6 +54,7 @@ builder.Services.AddSwaggerGen(c =>
         var xmlPath = Path.Combine(AppContext.BaseDirectory, $"{refAsm.Name}.xml");
         if (File.Exists(xmlPath)) c.IncludeXmlComments(xmlPath);
     }
+
     c.SchemaFilter<BicycleRental.Api.Swagger.TimeSpanSchemaFilter>();
 });
 

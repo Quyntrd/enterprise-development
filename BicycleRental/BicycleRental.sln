@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Application.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Infrastructure.InMemory", "BicycleRental.Infrastructure.InMemory\BicycleRental.Infrastructure.InMemory.csproj", "{E8BB0863-7C27-C254-7916-FBC6B3906C83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BicycleRental.Infrastructure.EfCore", "BicycleRental.Infrastructure.EfCore\BicycleRental.Infrastructure.EfCore.csproj", "{1059B600-1CDC-45A9-B575-6D375407881E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{E8BB0863-7C27-C254-7916-FBC6B3906C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8BB0863-7C27-C254-7916-FBC6B3906C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8BB0863-7C27-C254-7916-FBC6B3906C83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1059B600-1CDC-45A9-B575-6D375407881E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1059B600-1CDC-45A9-B575-6D375407881E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1059B600-1CDC-45A9-B575-6D375407881E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1059B600-1CDC-45A9-B575-6D375407881E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

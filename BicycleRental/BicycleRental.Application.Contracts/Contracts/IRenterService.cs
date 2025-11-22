@@ -1,4 +1,5 @@
 ﻿using BicycleRental.Application.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Renters;
 
 namespace BicycleRental.Application.Contracts.Contracts;
 
@@ -6,8 +7,8 @@ namespace BicycleRental.Application.Contracts.Contracts;
 /// Application service for renters (clients).
 /// </summary>
 public interface IRenterService : IApplicationService<
-    Renters.RenterDto,
-    Renters.RenterCreateUpdateDto,
+    RenterDto,
+    RenterCreateUpdateDto,
     int>
 {
     /// <summary>
@@ -15,5 +16,5 @@ public interface IRenterService : IApplicationService<
     /// </summary>
     /// <param name="dtoId">Renter identifier</param>
     /// <returns>List of RentalDto</returns>
-    public List<RentalDto> GetRentals(int dtoId);
+    public Task<List<RentalDto>> GetRentals(int dtoId);
 }

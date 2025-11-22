@@ -5,7 +5,6 @@ using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 
-
 namespace BicycleRental.Application.Services;
 
 /// <summary>
@@ -13,9 +12,6 @@ namespace BicycleRental.Application.Services;
 /// </summary>
 /// <remarks>
 /// Depends on a repository for BicycleModel and a repository for Bicycle to return related entities.
-/// </remarks>
-/// <remarks>
-/// Constructor.
 /// </remarks>
 public class BicycleModelService(
     IRepository<BicycleModel, int> modelRepo,
@@ -27,40 +23,47 @@ public class BicycleModelService(
     private IMapper _mapper = mapper;
 
     /// <inheritdoc/>
-    public BicycleModelDto Create(BicycleModelCreateUpdateDto dto)
+    public async Task<BicycleModelDto> Create(BicycleModelCreateUpdateDto dto)
     {
         var entity = _mapper.Map<BicycleModel>(dto);
-        var all = _modelRepo.ReadAll();
+        var all = await _modelRepo.ReadAll();
         var lastId = all.Count != 0 ? all.Max(m => m.Id) : 0;
         entity.Id = lastId + 1;
-        _modelRepo.Create(entity);
+        await _modelRepo.Create(entity);
         return _mapper.Map<BicycleModelDto>(entity);
     }
 
     /// <inheritdoc/>
-    public void Delete(int dtoId) => _modelRepo.Delete(dtoId);
+    public async Task<bool> Delete(int dtoId) => await _modelRepo.Delete(dtoId);
 
     /// <inheritdoc/>
-    public BicycleModelDto Get(int dtoId) =>
-        _mapper.Map<BicycleModelDto>(_modelRepo.Read(dtoId) ?? throw new KeyNotFoundException("BicycleModel not found"));
-
-    /// <inheritdoc/>
-    public List<BicycleModelDto> GetAll() =>
-        _mapper.Map<List<BicycleModelDto>>(_modelRepo.ReadAll());
-
-    /// <inheritdoc/>
-    public BicycleModelDto Update(BicycleModelCreateUpdateDto dto, int dtoId)
+    public async Task<BicycleModelDto> Get(int dtoId)
     {
-        var upd = _mapper.Map<BicycleModel>(dto);
-        upd.Id = dtoId;
-        _modelRepo.Update(upd);
-        return _mapper.Map<BicycleModelDto>(upd);
+        var entity = await _modelRepo.Read(dtoId)
+            ?? throw new KeyNotFoundException("BicycleModel not found");
+        return _mapper.Map<BicycleModelDto>(entity);
     }
 
     /// <inheritdoc/>
-    public List<BicycleDto> GetBicycles(int dtoId)
+    public async Task<List<BicycleModelDto>> GetAll()
     {
-        var bikes = _bicycleRepo.ReadAll().Where(b => b.ModelId == dtoId).ToList();
+        var list = await _modelRepo.ReadAll();
+        return _mapper.Map<List<BicycleModelDto>>(list);
+    }
+
+    /// <inheritdoc/>
+    public async Task<BicycleModelDto> Update(BicycleModelCreateUpdateDto dto, int dtoId)
+    {
+        var upd = _mapper.Map<BicycleModel>(dto);
+        upd.Id = dtoId;
+        var updated = await _modelRepo.Update(upd);
+        return _mapper.Map<BicycleModelDto>(updated);
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<BicycleDto>> GetBicycles(int dtoId)
+    {
+        var bikes = (await _bicycleRepo.ReadAll()).Where(b => b.ModelId == dtoId).ToList();
         return _mapper.Map<List<BicycleDto>>(bikes);
     }
 }

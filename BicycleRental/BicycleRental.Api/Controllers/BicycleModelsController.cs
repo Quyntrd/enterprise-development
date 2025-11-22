@@ -10,7 +10,8 @@ namespace BicycleRental.Api.Controllers;
 /// </summary>
 /// <param name="service">Application service handling bicycle model use-cases.</param>
 /// <param name="logger">Logger instance.</param>
-public class BicycleModelsController(IBicycleModelService service, ILogger<BicycleModelsController> logger) : CrudControllerBase<BicycleModelDto, BicycleModelCreateUpdateDto, int>(service, logger)
+public class BicycleModelsController(IBicycleModelService service, ILogger<BicycleModelsController> logger)
+    : CrudControllerBase<BicycleModelDto, BicycleModelCreateUpdateDto, int>(service, logger)
 {
     /// <summary>
     /// Get list of bicycles belonging to a specific bicycle model.
@@ -21,12 +22,12 @@ public class BicycleModelsController(IBicycleModelService service, ILogger<Bicyc
     [ProducesResponseType(200)]
     [ProducesResponseType(204)]
     [ProducesResponseType(500)]
-    public ActionResult<IList<BicycleDto>> GetBicycles(int id)
+    public async Task<ActionResult<IList<BicycleDto>>> GetBicycles(int id)
     {
         logger.LogInformation("{method} called on {controller} with id={id}", nameof(GetBicycles), GetType().Name, id);
         try
         {
-            var res = service.GetBicycles(id);
+            var res = await service.GetBicycles(id);
             return res != null && res.Count > 0 ? Ok(res) : NoContent();
         }
         catch (Exception ex)
