@@ -63,7 +63,7 @@ public class BicycleRentalDbContext(DbContextOptions<BicycleRentalDbContext> opt
             b.Property(x => x.BicycleId).IsRequired().HasColumnName("bicycle_id");
             b.Property(x => x.RenterId).IsRequired().HasColumnName("renter_id");
             b.Property(x => x.StartAt).IsRequired().HasColumnName("start_at");
-            b.Property(x => x.DurationHours).IsRequired().HasColumnName("duration_hours");
+            b.Property(x => x.DurationHours).IsRequired().HasColumnType("time").HasColumnName("duration_hours");
 
             b.HasOne<Bicycle>()
              .WithMany()

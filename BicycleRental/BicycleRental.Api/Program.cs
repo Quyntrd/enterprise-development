@@ -19,15 +19,14 @@ var mapperConfig = new MapperConfiguration(cfg =>
 IMapper? mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
-var conn = configuration.GetConnectionString("Default");
+var conn = builder.Configuration.GetConnectionString("Default");
 if (string.IsNullOrWhiteSpace(conn))
 {
-    throw new InvalidOperationException("Connection string 'Default' is not configured. Please set it in appsettings.json or environment.");
+    throw new InvalidOperationException("Connection string 'Default' is not configured.");
 }
-var connectionString = "server=localhost;port=3306;database=BicycleRentalDb;user=root;password=1234";
 
 builder.Services.AddDbContext<BicycleRentalDbContext>(options =>
-    options.UseMySQL(connectionString));
+    options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
 
 builder.Services.AddScoped<IRepository<BicycleModel, int>, BicycleModelEfCoreRepository>();
 builder.Services.AddScoped<IRepository<Bicycle, int>, BicycleEfCoreRepository>();
