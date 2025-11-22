@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BicycleRental.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BicycleRental.Domain.Enums;
 
 namespace BicycleRental.Domain.Models;
 
