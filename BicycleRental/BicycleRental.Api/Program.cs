@@ -6,27 +6,19 @@ using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 using BicycleRental.Infrastructure.EfCore;
 using BicycleRental.Infrastructure.EfCore.Repositories;
+using BicycleRental.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
 
-var mapperConfig = new MapperConfiguration(cfg =>
-    cfg.AddProfile(new BicycleRentalProfile()), LoggerFactory.Create(builder => builder.AddConsole())
-);
-IMapper? mapper = mapperConfig.CreateMapper();
-builder.Services.AddSingleton(mapper);
+builder.AddServiceDefaults();
 
-var conn = builder.Configuration.GetConnectionString("Default");
-if (string.IsNullOrWhiteSpace(conn))
+builder.Services.AddAutoMapper(config =>
 {
-    throw new InvalidOperationException("Connection string 'Default' is not configured.");
-}
-
-builder.Services.AddDbContext<BicycleRentalDbContext>(options =>
-    options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
+    config.AddProfile(new BicycleRentalProfile());
+});
 
 builder.Services.AddScoped<IRepository<BicycleModel, int>, BicycleModelEfCoreRepository>();
 builder.Services.AddScoped<IRepository<Bicycle, int>, BicycleEfCoreRepository>();
@@ -57,10 +49,21 @@ builder.Services.AddSwaggerGen(c =>
     c.SchemaFilter<BicycleRental.Api.Swagger.TimeSpanSchemaFilter>();
 });
 
+var conn = builder.Configuration.GetConnectionString("BicycleRentalDatabase");
+
+builder.Services.AddDbContext<BicycleRentalDbContext>(options =>
+    options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
+
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<BicycleRentalDbContext>();
+    db.Database.Migrate();
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

@@ -26,6 +26,7 @@
     <ProjectReference Include="..\BicycleRental.Application\BicycleRental.Application.csproj" />
     <ProjectReference Include="..\BicycleRental.Domain\BicycleRental.Domain.csproj" />
     <ProjectReference Include="..\BicycleRental.Infrastructure.EfCore\BicycleRental.Infrastructure.EfCore.csproj" />
+    <ProjectReference Include="..\BicycleRental.ServiceDefaults\BicycleRental.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
