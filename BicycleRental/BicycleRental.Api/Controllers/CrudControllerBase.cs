@@ -27,13 +27,13 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     [ProducesResponseType(201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public virtual async Task<ActionResult<TDto>> CreateAsync(TCreateUpdateDto newDto)
+    public async Task<ActionResult<TDto>> Create(TCreateUpdateDto newDto)
     {
-        logger.LogInformation("{method} method of {controller} is called with {@dto} parameter", nameof(CreateAsync), GetType().Name, newDto);
+        logger.LogInformation("{method} method of {controller} is called with {@dto} parameter", nameof(Create), GetType().Name, newDto);
         try
         {
             var res = await appService.Create(newDto);
-            logger.LogInformation("{method} method of {controller} executed successfully", nameof(CreateAsync), GetType().Name);
+            logger.LogInformation("{method} method of {controller} executed successfully", nameof(Create), GetType().Name);
 
             if (res == null)
             {
@@ -46,7 +46,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
                 var idValue = idProp.GetValue(res);
                 if (idValue != null)
                 {
-                    return CreatedAtAction(nameof(GetAsync), new { id = idValue }, res);
+                    return CreatedAtAction(nameof(Get), new { id = idValue }, res);
                 }
             }
 
@@ -54,12 +54,12 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
         }
         catch (ArgumentException argEx)
         {
-            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(CreateAsync), GetType().Name);
+            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(Create), GetType().Name);
             return BadRequest(argEx.Message);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(CreateAsync), GetType().Name);
+            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(Create), GetType().Name);
             return StatusCode(500, ex.Message);
         }
     }
@@ -74,23 +74,23 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public virtual async Task<ActionResult<TDto>> EditAsync(TKey id, TCreateUpdateDto newDto)
+    public async Task<ActionResult<TDto>> Edit(TKey id, TCreateUpdateDto newDto)
     {
-        logger.LogInformation("{method} called on {controller} with id={id} and payload {@dto}", nameof(EditAsync), GetType().Name, id, newDto);
+        logger.LogInformation("{method} called on {controller} with id={id} and payload {@dto}", nameof(Edit), GetType().Name, id, newDto);
         try
         {
             var res = await appService.Update(newDto, id);
-            logger.LogInformation("{method} executed successfully on {controller}", nameof(EditAsync), GetType().Name);
+            logger.LogInformation("{method} executed successfully on {controller}", nameof(Edit), GetType().Name);
             return Ok(res);
         }
         catch (ArgumentException argEx)
         {
-            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(EditAsync), GetType().Name);
+            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(Edit), GetType().Name);
             return BadRequest(argEx.Message);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(EditAsync), GetType().Name);
+            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(Edit), GetType().Name);
             return StatusCode(500, ex.Message);
         }
     }
@@ -105,29 +105,29 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     [ProducesResponseType(404)]
     [ProducesResponseType(400)]
     [ProducesResponseType(500)]
-    public virtual async Task<IActionResult> DeleteAsync(TKey id)
+    public async Task<IActionResult> Delete(TKey id)
     {
-        logger.LogInformation("{method} called on {controller} with id={id}", nameof(DeleteAsync), GetType().Name, id);
+        logger.LogInformation("{method} called on {controller} with id={id}", nameof(Delete), GetType().Name, id);
         try
         {
             var ok = await appService.Delete(id);
             if (!ok)
             {
-                logger.LogInformation("{method} did not find resource on {controller} with id={id}", nameof(DeleteAsync), GetType().Name, id);
+                logger.LogInformation("{method} did not find resource on {controller} with id={id}", nameof(Delete), GetType().Name, id);
                 return NotFound();
             }
 
-            logger.LogInformation("{method} executed successfully on {controller}", nameof(DeleteAsync), GetType().Name);
+            logger.LogInformation("{method} executed successfully on {controller}", nameof(Delete), GetType().Name);
             return Ok();
         }
         catch (ArgumentException argEx)
         {
-            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(DeleteAsync), GetType().Name);
+            logger.LogWarning(argEx, "Validation failed in {method} of {controller}", nameof(Delete), GetType().Name);
             return BadRequest(argEx.Message);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(DeleteAsync), GetType().Name);
+            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(Delete), GetType().Name);
             return StatusCode(500, ex.Message);
         }
     }
@@ -139,18 +139,18 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     [HttpGet]
     [ProducesResponseType(200)]
     [ProducesResponseType(500)]
-    public virtual async Task<ActionResult<IList<TDto>>> GetAllAsync()
+    public async Task<ActionResult<IList<TDto>>> GetAll()
     {
-        logger.LogInformation("{method} called on {controller}", nameof(GetAllAsync), GetType().Name);
+        logger.LogInformation("{method} called on {controller}", nameof(GetAll), GetType().Name);
         try
         {
             var res = await appService.GetAll();
-            logger.LogInformation("{method} executed successfully on {controller}", nameof(GetAllAsync), GetType().Name);
+            logger.LogInformation("{method} executed successfully on {controller}", nameof(GetAll), GetType().Name);
             return Ok(res);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(GetAllAsync), GetType().Name);
+            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(GetAll), GetType().Name);
             return StatusCode(500, ex.Message);
         }
     }
@@ -165,18 +165,18 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey>(
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
     [ProducesResponseType(500)]
-    public virtual async Task<ActionResult<TDto>> GetAsync(TKey id)
+    public async Task<ActionResult<TDto>> Get(TKey id)
     {
-        logger.LogInformation("{method} called on {controller} with id={id}", nameof(GetAsync), GetType().Name, id);
+        logger.LogInformation("{method} called on {controller} with id={id}", nameof(Get), GetType().Name, id);
         try
         {
             var res = await appService.Get(id);
-            logger.LogInformation("{method} executed successfully on {controller}", nameof(GetAsync), GetType().Name);
+            logger.LogInformation("{method} executed successfully on {controller}", nameof(Get), GetType().Name);
             return res != null ? Ok(res) : NoContent();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(GetAsync), GetType().Name);
+            logger.LogError(ex, "An exception happened during {method} method of {controller}", nameof(Get), GetType().Name);
             return StatusCode(500, ex.Message);
         }
     }

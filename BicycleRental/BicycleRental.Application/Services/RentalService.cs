@@ -45,17 +45,31 @@ public class RentalService(
     public async Task<List<RentalDto>> GetAll()
     {
         var all = await _rentalRepo.ReadAll();
-        var mappedTasks = all.Select(MapWithPrice);
-        var results = await Task.WhenAll(mappedTasks);
-        return results.ToList();
+        var results = new List<RentalDto>(all.Count);
+        // последовательное маппирование, чтобы избежать параллельных запросов к одному DbContext
+        foreach (var r in all)
+        {
+            results.Add(await MapWithPrice(r));
+        }
+        return results;
     }
 
     /// <inheritdoc/>
     public async Task<RentalDto> Update(RentalCreateUpdateDto dto, int dtoId)
     {
-        var upd = _mapper.Map<Rental>(dto);
-        upd.Id = dtoId;
-        var updated = await _rentalRepo.Update(upd);
+        var existing = await _rentalRepo.Read(dtoId)
+            ?? throw new KeyNotFoundException("Rental not found");
+
+        var bicycle = await _bicycleRepo.Read(dto.BicycleId)
+            ?? throw new KeyNotFoundException("Bicycle not found");
+
+        existing.BicycleId = dto.BicycleId;
+        existing.RenterId = dto.RenterId;
+        existing.StartAt = dto.StartAt;
+        existing.DurationHours = dto.DurationHours;
+
+        var updated = await _rentalRepo.Update(existing);
+
         return await MapWithPrice(updated);
     }
 
@@ -63,16 +77,24 @@ public class RentalService(
     public async Task<List<RentalDto>> GetByBicycleId(int bicycleId)
     {
         var list = (await _rentalRepo.ReadAll()).Where(r => r.BicycleId == bicycleId).ToList();
-        var mapped = await Task.WhenAll(list.Select(MapWithPrice));
-        return mapped.ToList();
+        var results = new List<RentalDto>(list.Count);
+        foreach (var r in list)
+        {
+            results.Add(await MapWithPrice(r));
+        }
+        return results;
     }
 
     /// <inheritdoc/>
     public async Task<List<RentalDto>> GetByRenterId(int renterId)
     {
         var list = (await _rentalRepo.ReadAll()).Where(r => r.RenterId == renterId).ToList();
-        var mapped = await Task.WhenAll(list.Select(MapWithPrice));
-        return mapped.ToList();
+        var results = new List<RentalDto>(list.Count);
+        foreach (var r in list)
+        {
+            results.Add(await MapWithPrice(r));
+        }
+        return results;
     }
 
     /// <summary>
