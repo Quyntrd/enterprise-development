@@ -46,7 +46,6 @@ public class RentalService(
     {
         var all = await _rentalRepo.ReadAll();
         var results = new List<RentalDto>(all.Count);
-        // последовательное маппирование, чтобы избежать параллельных запросов к одному DbContext
         foreach (var r in all)
         {
             results.Add(await MapWithPrice(r));

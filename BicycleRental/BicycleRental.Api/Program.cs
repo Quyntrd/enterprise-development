@@ -1,4 +1,3 @@
-using AutoMapper;
 using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Application.Mapping;
 using BicycleRental.Application.Services;
