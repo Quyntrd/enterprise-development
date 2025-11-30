@@ -11,11 +11,29 @@ namespace BicycleRental.Infrastructure.EfCore;
 /// </summary>
 public class BicycleRentalDbContext(DbContextOptions<BicycleRentalDbContext> options) : DbContext(options)
 {
+    /// <summary>
+    /// Bicycles in the database
+    /// </summary>
     public DbSet<BicycleModel> BicycleModels { get; set; }
+
+    /// <summary>
+    /// Bicycle models in the database
+    /// </summary>
     public DbSet<Bicycle> Bicycles { get; set; }
+
+    /// <summary>
+    /// Renters in the database
+    /// </summary>
     public DbSet<Renter> Renters { get; set; }
+
+    /// <summary>
+    /// Rentals in the database
+    /// </summary>
     public DbSet<Rental> Rentals { get; set; }
 
+    /// <summary>
+    /// Configures entity relationships, keys, and constraints
+    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BicycleModel>(b =>
