@@ -11,6 +11,7 @@ public class RenterEfCoreRepository(BicycleRentalDbContext context) : IRepositor
 {
     private readonly DbSet<Renter> _renters = context.Renters;
 
+    /// <inheritdoc/>
     public async Task<Renter> Create(Renter entity)
     {
         var result = await _renters.AddAsync(entity);
@@ -18,6 +19,7 @@ public class RenterEfCoreRepository(BicycleRentalDbContext context) : IRepositor
         return result.Entity;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> Delete(int entityId)
     {
         var entity = await _renters.FirstOrDefaultAsync(e => e.Id == entityId);
@@ -27,12 +29,15 @@ public class RenterEfCoreRepository(BicycleRentalDbContext context) : IRepositor
         return true;
     }
 
+    /// <inheritdoc/>
     public async Task<Renter?> Read(int entityId) =>
         await _renters.AsNoTracking().FirstOrDefaultAsync(e => e.Id == entityId);
 
+    /// <inheritdoc/>
     public async Task<IList<Renter>> ReadAll() =>
         await _renters.AsNoTracking().ToListAsync();
 
+    /// <inheritdoc/>
     public async Task<Renter> Update(Renter entity)
     {
         _renters.Update(entity);

@@ -11,6 +11,7 @@ public class BicycleModelEfCoreRepository(BicycleRentalDbContext context) : IRep
 {
     private readonly DbSet<BicycleModel> _bicyclemodels = context.BicycleModels;
 
+    /// <inheritdoc/>
     public async Task<BicycleModel> Create(BicycleModel entity)
     {
         var result = await _bicyclemodels.AddAsync(entity);
@@ -18,6 +19,7 @@ public class BicycleModelEfCoreRepository(BicycleRentalDbContext context) : IRep
         return result.Entity;
     }
 
+    /// <inheritdoc/>
     public async Task<bool> Delete(int entityId)
     {
         var entity = await _bicyclemodels.FirstOrDefaultAsync(e => e.Id == entityId);
@@ -27,12 +29,15 @@ public class BicycleModelEfCoreRepository(BicycleRentalDbContext context) : IRep
         return true;
     }
 
+    /// <inheritdoc/>
     public async Task<BicycleModel?> Read(int entityId) =>
         await _bicyclemodels.AsNoTracking().FirstOrDefaultAsync(e => e.Id == entityId);
 
+    /// <inheritdoc/>
     public async Task<IList<BicycleModel>> ReadAll() =>
         await _bicyclemodels.AsNoTracking().ToListAsync();
 
+    /// <inheritdoc/>
     public async Task<BicycleModel> Update(BicycleModel entity)
     {
         _bicyclemodels.Update(entity);

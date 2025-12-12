@@ -7,7 +7,7 @@ var bicycleDb = builder
     .AddDatabase(dbName);
 
 builder.AddProject<Projects.BicycleRental_Api>("bicyclerental-api-host")
-    .WithReference(bicycleDb, "Database")
+    .WithReference(bicycleDb, "BicycleRentalDatabase")
     .WaitFor(bicycleDb);
 
 builder.Build().Run();
