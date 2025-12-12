@@ -3,7 +3,7 @@ using BicycleRental.Application.Contracts.Bicycles;
 using BicycleRental.Application.Contracts.Contracts;
 using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace BicycleRental.Application.Services;
 
@@ -26,14 +26,7 @@ public class BicycleService(IRepository<Bicycle, int> repo, IRepository<BicycleM
         var lastId = all.Count != 0 ? all.Max(b => b.Id) : 0;
         entity.Id = lastId + 1;
 
-        try
-        {
-            await _repo.Create(entity);
-        }
-        catch (DbUpdateException dbEx)
-        {
-            throw new InvalidOperationException("Database error while creating Bicycle: " + dbEx.Message, dbEx);
-        }
+        await _repo.Create(entity);
 
         return _mapper.Map<BicycleDto>(entity);
     }
@@ -62,15 +55,10 @@ public class BicycleService(IRepository<Bicycle, int> repo, IRepository<BicycleM
         var upd = _mapper.Map<Bicycle>(dto);
         upd.Id = dtoId;
 
-        try
-        {
-            var updated = await _repo.Update(upd);
-            return _mapper.Map<BicycleDto>(updated);
-        }
-        catch (DbUpdateException dbEx)
-        {
-            throw new InvalidOperationException("Database error while updating Bicycle: " + dbEx.Message, dbEx);
-        }
+
+        var updated = await _repo.Update(upd);
+        return _mapper.Map<BicycleDto>(updated);
+
     }
 
     /// <inheritdoc/>

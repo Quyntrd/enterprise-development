@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
+#pragma warning disable IDE0161 // Convert to file-scoped namespace
 namespace BicycleRental.Infrastructure.EfCore.Migrations
+#pragma warning restore IDE0161 // Convert to file-scoped namespace
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
