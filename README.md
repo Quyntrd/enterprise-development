@@ -1,112 +1,108 @@
-# 🚲 BicycleRental API
+# 🚲 BicycleRental API — Обновлённый README
 
-![.NET](https://img.shields.io/badge/.NET-8.0-blue)
-![C#](https://img.shields.io/badge/C%23-12.0-blue)
-![AutoMapper](https://img.shields.io/badge/AutoMapper-12.0.1-orange)
-![Swagger](https://img.shields.io/badge/Swagger-6.7.0-green)
+![.NET](https://img.shields.io/badge/.NET-8.0-blue) ![C#](https://img.shields.io/badge/C%23-12.0-blue) ![AutoMapper](https://img.shields.io/badge/AutoMapper-12.0.1-orange) ![Swagger](https://img.shields.io/badge/Swagger-6.7.0-green) ![EF Core](https://img.shields.io/badge/EF%20Core-8.0-blue) ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-enabled-orange)
 
-## Структура проекта
+## Краткое описание
 
-### Domain
+BicycleRental — примерная реализация сервисной архитектуры для управления прокатом велосипедов. Проект разделён на несколько слоёв: `Domain`, `Application.Contracts`, `Application`, `Infrastructure` (EF Core), `Api` и `Generator.RabbitMq.Host`.
 
-Содержит основные доменные сущности:
-
-- **BicycleModel** — модель велосипеда (название, тип, цена за час)
-- **Bicycle** — конкретный велосипед, связанный с моделью
-- **Renter** — арендатор, содержащий персональные данные
-- **Rental** — аренда велосипеда (начало, длительность, арендатор, велосипед)
-
-Также определён универсальный интерфейс **`IRepository<TEntity, TKey>`**  
-для работы с различными хранилищами данных.
+Проект реализует асинхронные CRUD-сервисы, модель данных для велосипедов, моделей велосипедов, арендаторов и самих аренды, а также вспомогательные механизмы для генерации тестовых данных и публикации их в RabbitMQ.
 
 ---
 
-### Application.Contracts
+## Содержание репозитория
 
-DTO-классы и контракты для API:
-
-- **`EntityDto`** — используется для возврата сущностей из запросов  
-- **`EntityCreateUpdateDto`** — для создания и обновления сущностей  
-- **`RentalDto` / `RentalCreateUpdateDto`** — DTO для аренды с полями  
-  `BicycleId`, `RenterId`, `StartAt`, `DurationHours`
-
-Содержит интерфейсы сервисов (`IBicycleService`, `IRenterService`, `IRentalService` и т.д.),  
-реализуемые в проекте **Application**.
+- `BicycleRental.Domain` — доменные модели, перечисления, интерфейс `IRepository<TEntity, TKey>` и `BicycleRentalDataSeed` для фикстур.
+- `BicycleRental.Application.Contracts` — DTO и интерфейсы сервисов (контракты приложения).
+- `BicycleRental.Application` — реализации сервисов и AutoMapper профиль `BicycleRentalProfile`.
+- `BicycleRental.Infrastructure.EfCore` — реализации репозиториев через EF Core и контекст `BicycleRentalDbContext`.
+- `BicycleRental.Api` — веб-API с контроллерами, Swagger и конфигурацией.
+- `BicycleRental.Generator.RabbitMq.Host` — сервис генерации тестовых DTO и публикации в RabbitMQ.
 
 ---
 
-### Application
+## Основные сущности (Domain)
 
-Реализует бизнес-логику и сервисы, использующие контракты из `Application.Contracts`.
+- **BicycleModel** — свойства: `Id`, `Name`, `Type`, `WheelSizeInInches`, `MaxPassengerWeightKg`, `WeightKg`, `BrakeType`, `ModelYear`, `PricePerHour`.
+- **Bicycle** — свойства: `Id`, `SerialNumber`, `ModelId`, `Color`.
+- **Renter** — свойства: `Id`, `FirstName`, `LastName`, `Patronymic`, `Phone`.
+- **Rental** — свойства: `Id`, `BicycleId`, `RenterId`, `StartAt`, `DurationHours` (TimeSpan).
+- **BicycleType** — `City`, `Mountain`, `Road`, `Electric`, `Sport`.
 
-Сервисы:
-
-- `BicycleService`
-- `BicycleModelService`
-- `RenterService`
-- `RentalService`
-
-Используется **AutoMapper** для маппинга между сущностями и DTO.  
-Метод `MapWithPrice()` в `RentalService` рассчитывает стоимость аренды по длительности и модели велосипеда.
+Интерфейс для репозиториев: `IRepository<TEntity, TKey>` предоставляет асинхронные методы CRUD: `Create`, `Update`, `Delete`, `Read`, `ReadAll`.
 
 ---
 
-### Infrastructure.InMemory
+## Application.Contracts (DTO и контракты)
 
-Реализация in-memory репозиториев, позволяющая работать без базы данных.
+- `BicycleModelDto`, `BicycleModelCreateUpdateDto`
+- `BicycleDto`, `BicycleCreateUpdateDto`
+- `RenterDto`, `RenterCreateUpdateDto`
+- `RentalDto`, `RentalCreateUpdateDto`
 
-Каждый репозиторий наследуется от `InMemoryRepository<TEntity>`  
-и реализует `IRepository<TEntity, int>`.
+Контракты сервисов расширяют общий `IApplicationService<TDto, TCreateUpdateDto, TKey>` и добавляют специфичные методы:
 
-Реализованы репозитории:
-
-- `BicycleModelInMemoryRepository`
-- `BicycleInMemoryRepository`
-- `RenterInMemoryRepository`
-- `RentalInMemoryRepository`
-
-Используются для тестирования и отладки без внешних зависимостей.
+- `IBicycleModelService` — `GetBicycles(int dtoId)`
+- `IBicycleService` — `GetByModelId(int modelId)`
+- `IRenterService` — `GetRentals(int dtoId)`
+- `IRentalService` — `GetByBicycleId(int bicycleId)`, `GetByRenterId(int renterId)`
 
 ---
 
-### Api
+## Application (сервисы и логика)
 
-Основной REST API-проект, реализующий контроллеры, Swagger и логирование.
+Реализованы сервисы, использующие репозитории и AutoMapper:
 
-Контроллеры наследуются от базового класса:
+- **BicycleModelService** — CRUD + `GetBicycles` (возвращает велосипеды по `ModelId`).
+- **BicycleService** — при создании/обновлении проверяет существование модели; CRUD + `GetByModelId`.
+- **RenterService** — CRUD + `GetRentals`.
+- **RentalService** — CRUD + методы выборки по `BicycleId` и `RenterId`. В `RentalService` реализован `MapWithPrice(Rental r)` — маппинг аренды в `RentalDto` с расчётом `PricePerHour` и `TotalPrice` по текущей цене модели и длительности `DurationHours`.
+
+AutoMapper профиль `BicycleRentalProfile` настраивает отображения между доменными моделями и DTO.
+
+---
+
+## Infrastructure (EF Core)
+
+Реализованы репозитории на основе EF Core и контекста `BicycleRentalDbContext`:
+
+- `BicycleModelEfCoreRepository`
+- `BicycleEfCoreRepository`
+- `RenterEfCoreRepository`
+- `RentalEfCoreRepository`
+
+Подключение к MySQL выполняется через строку подключения `BicycleRentalDatabase`.
+
+---
+
+## API
+
+Контроллеры наследуются от обобщённого базового контроллера:
 
 ```csharp
 CrudControllerBase<TDto, TCreateUpdateDto, TKey>
 ```
 
-#### Контроллеры:
+Контроллеры:
 
-- `BicycleModelsController`
-- `BicyclesController`
-- `RentersController`
-- `RentalsController`
+- `BicycleModelsController` — `GET /api/bicyclemodels/{id}/bicycles` — возвращает список велосипедов модели.
+- `BicyclesController` — `GET /api/bicycles/{id}/rentals` — возвращает аренды по велосипедом.
+- `RentersController` — `GET /api/renters/{id}/rentals` — возвращает аренды арендатора.
+- `RentalsController` — обычные CRUD операции для аренды.
 
-Каждый контроллер предоставляет CRUD-операции:
-`GET /api/{entity}`, `GET /api/{entity}/{id}`, `POST`, `PUT`, `DELETE`
+Особенности реализации контроллеров:
 
-#### Особенности:
-- Для `Rentals` используется `TimeSpanSchemaFilter`, отображающий `DurationHours` корректно как `"hh:mm:ss"`.
-- Swagger включает XML-комментарии из всех зависимых сборок.
-- Все контроллеры используют `ILogger` для логирования ошибок и действий.
+- Методы асинхронны, содержат логирование (`ILogger`).
+- При ошибках возвращаются соответствующие статусы: `400`, `404`, `500` и т.д.
+- `CreatedAtAction` используется при успешном создании ресурса (если в ответе присутствует `Id`).
 
 ---
 
-### Swagger
+## Swagger и TimeSpan
 
-Фильтр **`TimeSpanSchemaFilter`**, расположенный в:
+В проект добавлен `TimeSpanSchemaFilter`, который приводит `TimeSpan` к строковому представлению с форматом `hh:mm:ss` в Swagger UI.
 
-```
-BicycleRental.Api/Swagger/TimeSpanSchemaFilter.cs
-```
-
-Корректирует отображение `TimeSpan` в Swagger UI:
-
-Пример корректного тела запроса:
+Пример тела запроса для создания аренды в Swagger:
 
 ```json
 {
@@ -119,15 +115,25 @@ BicycleRental.Api/Swagger/TimeSpanSchemaFilter.cs
 
 ---
 
-### Program.cs
+## Генератор данных и RabbitMQ
 
-Файл `BicycleRental.Api/Program.cs` выполняет:
+`BicycleRental.Generator.RabbitMq.Host` содержит генераторы на базе Bogus для DTO и стратегии публикации в RabbitMQ:
 
-- Регистрацию AutoMapper (`BicycleRentalProfile`)
-- Регистрацию in-memory репозиториев и сервисов
-- Настройку контроллеров
-- Подключение Swagger с XML-комментариями всех сборок
+- `BicycleGenerator`, `BicycleModelGenerator`, `RenterGenerator`, `RentalGenerator`.
+- `GeneratorExtensions.WithRecord<T>` — позволяет создавать объекты DTO без вызова конструкторов (используется `RuntimeHelpers.GetUninitializedObject`).
+- Стратегии публикации реализуют интерфейс `IGeneratorStrategy<T>` и вызывают `IProducerService` для отправки пакетов в очередь.
 
-Swagger автоматически добавляет документацию для всех проектов решения.
+В `Program.cs` приложение настраивает RabbitMQ клиент с параметрами автоматического восстановления, heartbeat и `DispatchConsumersAsync`.
+
+---
+
+## Program.cs — ключевые моменты конфигурации
+
+- Регистрация AutoMapper и профиля `BicycleRentalProfile`.
+- Регистрация репозиториев и сервисов в DI-контейнере.
+- Подключение EF Core к MySQL: `AddDbContext<BicycleRentalDbContext>(options => options.UseMySql(conn, ServerVersion.AutoDetect(conn)))`.
+- Swagger с подключением XML-комментариев для всех сборок.
+- Настройка RabbitMQ клиента и фоновый сервис `BicycleRentalRabbitMqConsumer`.
+- Миграции БД выполняются в режиме разработки (при `app.Environment.IsDevelopment()` вызывается `db.Database.Migrate()`).
 
 ---
