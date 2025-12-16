@@ -49,8 +49,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SchemaFilter<BicycleRental.Api.Swagger.TimeSpanSchemaFilter>();
 });
 
-var conn = builder.Configuration.GetConnectionString("BicycleRentalDatabase")
-           ?? throw new InvalidOperationException("Connection string 'BicycleRentalDatabase' is not configured.");
+var conn = builder.Configuration.GetConnectionString("BicycleRentalDatabase");
 
 builder.Services.AddDbContext<BicycleRentalDbContext>(options =>
     options.UseMySql(conn, ServerVersion.AutoDetect(conn)));

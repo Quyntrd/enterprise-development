@@ -1,6 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var dbName = "bicycle_rental";
+var dbName = "BicycleRentalDatabase";
 
 var bicycleDb = builder
     .AddMySql("bicycle-mysql")

@@ -1,5 +1,4 @@
 ﻿using BicycleRental.Application.Contracts.Renters;
-using BicycleRental.Generator.RabbitMq.Host.Generators;
 using Bogus;
 
 namespace BicycleRental.Generator.RabbitMq.Host.Generators;

@@ -17,8 +17,8 @@ public static class RentalGenerator
     {
         var faker = new Faker<RentalCreateUpdateDto>()
             .WithRecord()
-            .RuleFor(d => d.BicycleId, f => f.Random.Int(15, 30))
-            .RuleFor(d => d.RenterId, f => f.Random.Int(15, 30))
+            .RuleFor(d => d.BicycleId, f => f.Random.Int(1, 20))
+            .RuleFor(d => d.RenterId, f => f.Random.Int(1, 20))
             .RuleFor(d => d.StartAt, f => f.Date.RecentOffset(days: 60).UtcDateTime)
             .RuleFor(d => d.DurationHours, f => TimeSpan.FromHours(f.Random.Double(0.25, 48.0)));
 

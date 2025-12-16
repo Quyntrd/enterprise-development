@@ -1,10 +1,9 @@
-﻿using System.Text.Json;
-using System.Text;
-using RabbitMQ.Client;
-using BicycleRental.Application.Contracts.BicycleModels;
+﻿using BicycleRental.Application.Contracts.BicycleModels;
 using BicycleRental.Application.Contracts.Bicycles;
 using BicycleRental.Application.Contracts.Rentals;
 using BicycleRental.Application.Contracts.Renters;
+using RabbitMQ.Client;
+using System.Text.Json;
 
 namespace BicycleRental.Generator.RabbitMq.Host.Services;
 

@@ -1,16 +1,16 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using BicycleRental.Application.Contracts.BicycleModels;
+using BicycleRental.Application.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.Contracts;
+using BicycleRental.Application.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Renters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using BicycleRental.Application.Contracts.BicycleModels;
-using BicycleRental.Application.Contracts.Bicycles;
-using BicycleRental.Application.Contracts.Rentals;
-using BicycleRental.Application.Contracts.Renters;
-using BicycleRental.Application.Contracts.Contracts;
+using System.Text;
+using System.Text.Json;
 
 namespace BicycleRental.Infrastructure.RabbitMq;
 
@@ -18,38 +18,29 @@ namespace BicycleRental.Infrastructure.RabbitMq;
 /// Background service responsible for consuming messages from RabbitMQ,
 /// deserializing them and delegating processing to the appropriate scoped application services.
 /// </summary>
-public class BicycleRentalRabbitMqConsumer : BackgroundService
+/// <remarks>
+/// Creates new instance of <see cref="BicycleRentalRabbitMqConsumer"/>.
+/// </remarks>
+/// <param name="connection">RabbitMQ connection injected from DI.</param>
+/// <param name="scopeFactory">Factory to create scopes for scoped services.</param>
+/// <param name="configuration">Configuration to read RabbitMq settings from.</param>
+/// <param name="logger">Logger for diagnostics.</param>
+public class BicycleRentalRabbitMqConsumer(
+    IConnection connection,
+    IServiceScopeFactory scopeFactory,
+    IConfiguration configuration,
+    ILogger<BicycleRentalRabbitMqConsumer> logger) : BackgroundService
 {
-    private readonly IConnection _connection;
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<BicycleRentalRabbitMqConsumer> _logger;
-    private readonly string _queueName;
+    private readonly IConnection _connection = connection ?? throw new ArgumentNullException(nameof(connection));
+    private readonly IServiceScopeFactory _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
+    private readonly ILogger<BicycleRentalRabbitMqConsumer> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly string _queueName = configuration.GetSection("RabbitMq")["QueueName"]
+            ?? throw new KeyNotFoundException("RabbitMq:QueueName section is missing in configuration.");
     private IModel? _channel;
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true
     };
-
-    /// <summary>
-    /// Creates new instance of <see cref="BicycleRentalRabbitMqConsumer"/>.
-    /// </summary>
-    /// <param name="connection">RabbitMQ connection injected from DI.</param>
-    /// <param name="scopeFactory">Factory to create scopes for scoped services.</param>
-    /// <param name="configuration">Configuration to read RabbitMq settings from.</param>
-    /// <param name="logger">Logger for diagnostics.</param>
-    public BicycleRentalRabbitMqConsumer(
-        IConnection connection,
-        IServiceScopeFactory scopeFactory,
-        IConfiguration configuration,
-        ILogger<BicycleRentalRabbitMqConsumer> logger)
-    {
-        _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-        _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-        _queueName = configuration.GetSection("RabbitMq")["QueueName"]
-            ?? throw new KeyNotFoundException("RabbitMq:QueueName section is missing in configuration.");
-    }
 
     /// <summary>
     /// Initializes RabbitMQ channel and begins consuming messages.
@@ -59,10 +50,7 @@ public class BicycleRentalRabbitMqConsumer : BackgroundService
         _logger.LogInformation("Establishing RabbitMQ channel to queue '{queue}'", _queueName);
 
         stoppingToken.ThrowIfCancellationRequested();
-
         _channel = _connection.CreateModel();
-
-        _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
         _channel.QueueDeclare(
             queue: _queueName,
@@ -70,12 +58,15 @@ public class BicycleRentalRabbitMqConsumer : BackgroundService
             exclusive: false,
             autoDelete: false);
 
-        var consumer = new EventingBasicConsumer(_channel);
+        _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+
+        _logger.LogInformation("Started listening to queue '{queue}'", _queueName);
+
+        var consumer = new AsyncEventingBasicConsumer(_channel);
         consumer.Received += async (_, ea) => await ReceiveMessageAsync(ea, stoppingToken);
 
         _channel.BasicConsume(queue: _queueName, autoAck: false, consumer: consumer);
 
-        _logger.LogInformation("Started listening to queue '{queue}'", _queueName);
         return Task.CompletedTask;
     }
 
@@ -132,24 +123,28 @@ public class BicycleRentalRabbitMqConsumer : BackgroundService
                 case "bicyclemodel":
                 case "bicycle.model":
                 case "bicycle.model.create":
-                    await ProcessBicycleModelAsync(json, scope);
+                    var modelSvc = scope.ServiceProvider.GetRequiredService<IBicycleModelService>();
+                    await ProcessBatchOrSingleAsync<BicycleModelCreateUpdateDto>(json, dto => modelSvc.Create(dto));
                     break;
 
                 case "bicycle":
                 case "bicycle.create":
                 case "bicycle.update":
-                    await ProcessBicycleAsync(json, scope);
+                    var bikeSvc = scope.ServiceProvider.GetRequiredService<IBicycleService>();
+                    await ProcessBatchOrSingleAsync<BicycleCreateUpdateDto>(json, dto => bikeSvc.Create(dto));
                     break;
 
                 case "renter":
                 case "renter.create":
-                    await ProcessRenterAsync(json, scope);
+                    var renterSvc = scope.ServiceProvider.GetRequiredService<IRenterService>();
+                    await ProcessBatchOrSingleAsync<RenterCreateUpdateDto>(json, dto => renterSvc.Create(dto));
                     break;
 
                 case "rental":
                 case "rental.create":
                 case "rental.update":
-                    await ProcessRentalAsync(json, scope);
+                    var rentalSvc = scope.ServiceProvider.GetRequiredService<IRentalService>();
+                    await ProcessBatchOrSingleAsync<RentalCreateUpdateDto>(json, dto => rentalSvc.Create(dto));
                     break;
 
                 default:
@@ -166,7 +161,10 @@ public class BicycleRentalRabbitMqConsumer : BackgroundService
             _logger.LogError(ex, "Error while processing message from queue '{queue}' with routing key '{routingKey}'", _queueName, routingKey);
             try
             {
-                _channel?.BasicNack(deliveryTag: args.DeliveryTag, multiple: false, requeue: false);
+                if (_channel?.IsOpen == true)
+                {
+                    _channel.BasicNack(deliveryTag: args.DeliveryTag, multiple: false, requeue: false);
+                }
             }
             catch (Exception nackEx)
             {
@@ -175,101 +173,34 @@ public class BicycleRentalRabbitMqConsumer : BackgroundService
         }
     }
 
-    private async Task ProcessBicycleModelAsync(string json, IServiceScope scope)
+    private async Task ProcessBatchOrSingleAsync<T>(string json, Func<T, Task> action)
     {
-        var svc = scope.ServiceProvider.GetRequiredService<IBicycleModelService>();
+        var trimmedJson = json.TrimStart();
 
-        if (TryDeserialize<List<BicycleModelCreateUpdateDto>>(json, out var list) && list is not null)
+        if (trimmedJson.StartsWith("["))
         {
-            foreach (var dto in list)
+            var list = JsonSerializer.Deserialize<List<T>>(json, _jsonOptions);
+            if (list is not null)
             {
-                await svc.Create(dto);
+                foreach (var item in list)
+                {
+                    try
+                    {
+                        await action(item);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to process item of type {Type} in batch.", typeof(T).Name);
+                    }
+                }
             }
-
-            return;
         }
-
-        var single = JsonSerializer.Deserialize<BicycleModelCreateUpdateDto>(json, _jsonOptions)
-            ?? throw new FormatException("Unable to deserialize BicycleModelCreateUpdateDto from message body");
-
-        await svc.Create(single);
-    }
-
-    private async Task ProcessBicycleAsync(string json, IServiceScope scope)
-    {
-        var svc = scope.ServiceProvider.GetRequiredService<IBicycleService>();
-
-        if (TryDeserialize<List<BicycleCreateUpdateDto>>(json, out var list) && list is not null)
+        else
         {
-            foreach (var dto in list)
-            {
-                await svc.Create(dto);
-            }
+            var single = JsonSerializer.Deserialize<T>(json, _jsonOptions)
+                    ?? throw new FormatException($"Unable to deserialize {typeof(T).Name} from message body");
 
-            return;
-        }
-
-        var single = JsonSerializer.Deserialize<BicycleCreateUpdateDto>(json, _jsonOptions)
-            ?? throw new FormatException("Unable to deserialize BicycleCreateUpdateDto from message body");
-
-        await svc.Create(single);
-    }
-
-    private async Task ProcessRenterAsync(string json, IServiceScope scope)
-    {
-        var svc = scope.ServiceProvider.GetRequiredService<IRenterService>();
-
-        if (TryDeserialize<List<RenterCreateUpdateDto>>(json, out var list) && list is not null)
-        {
-            foreach (var dto in list)
-            {
-                await svc.Create(dto);
-            }
-
-            return;
-        }
-
-        var single = JsonSerializer.Deserialize<RenterCreateUpdateDto>(json, _jsonOptions)
-            ?? throw new FormatException("Unable to deserialize RenterCreateUpdateDto from message body");
-
-        await svc.Create(single);
-    }
-
-    private async Task ProcessRentalAsync(string json, IServiceScope scope)
-    {
-        var svc = scope.ServiceProvider.GetRequiredService<IRentalService>();
-
-        if (TryDeserialize<List<RentalCreateUpdateDto>>(json, out var list) && list is not null)
-        {
-            foreach (var dto in list)
-            {
-                await svc.Create(dto);
-            }
-
-            return;
-        }
-
-        var single = JsonSerializer.Deserialize<RentalCreateUpdateDto>(json, _jsonOptions)
-            ?? throw new FormatException("Unable to deserialize RentalCreateUpdateDto from message body");
-
-        await svc.Create(single);
-    }
-
-    /// <summary>
-    /// Tries to deserialize json into T. Returns false on error without throwing.
-    /// Useful to detect whether payload is an array/list.
-    /// </summary>
-    private bool TryDeserialize<T>(string json, out T? value)
-    {
-        try
-        {
-            value = JsonSerializer.Deserialize<T>(json, _jsonOptions);
-            return value is not null;
-        }
-        catch
-        {
-            value = default;
-            return false;
+            await action(single);
         }
     }
 }

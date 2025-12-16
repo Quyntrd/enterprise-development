@@ -1,3 +1,7 @@
+using BicycleRental.Application.Contracts.BicycleModels;
+using BicycleRental.Application.Contracts.Bicycles;
+using BicycleRental.Application.Contracts.Rentals;
+using BicycleRental.Application.Contracts.Renters;
 using BicycleRental.Generator.RabbitMq.Host.Services;
 using BicycleRental.ServiceDefaults;
 
@@ -17,10 +21,16 @@ builder.AddRabbitMQClient("rabbitmq",
 
 builder.Services.AddScoped<IProducerService, BicycleRentalRabbitMqProducer>();
 
-builder.Services.AddHostedService<BicycleModelGeneratorService>();
-builder.Services.AddHostedService<BicycleGeneratorService>();
-builder.Services.AddHostedService<RenterGeneratorService>();
-builder.Services.AddHostedService<RentalGeneratorService>();
+builder.Services.AddSingleton<IGeneratorStrategy<BicycleCreateUpdateDto>, BicycleGeneratorStrategy>();
+builder.Services.AddSingleton<IGeneratorStrategy<BicycleModelCreateUpdateDto>, BicycleModelGeneratorStrategy>();
+builder.Services.AddSingleton<IGeneratorStrategy<RenterCreateUpdateDto>, RenterGeneratorStrategy>();
+builder.Services.AddSingleton<IGeneratorStrategy<RentalCreateUpdateDto>, RentalGeneratorStrategy>();
+
+builder.Services.AddHostedService<GeneratorServiceBase<BicycleCreateUpdateDto>>();
+builder.Services.AddHostedService<GeneratorServiceBase<BicycleModelCreateUpdateDto>>();
+builder.Services.AddHostedService<GeneratorServiceBase<RenterCreateUpdateDto>>();
+builder.Services.AddHostedService<GeneratorServiceBase<RentalCreateUpdateDto>>();
+
 
 var app = builder.Build();
 
