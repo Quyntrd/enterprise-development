@@ -5,6 +5,7 @@ using BicycleRental.Domain;
 using BicycleRental.Domain.Models;
 using BicycleRental.Infrastructure.EfCore;
 using BicycleRental.Infrastructure.EfCore.Repositories;
+using BicycleRental.Infrastructure.RabbitMq;
 using BicycleRental.ServiceDefaults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -48,10 +49,23 @@ builder.Services.AddSwaggerGen(c =>
     c.SchemaFilter<BicycleRental.Api.Swagger.TimeSpanSchemaFilter>();
 });
 
-var conn = builder.Configuration.GetConnectionString("BicycleRentalDatabase");
+var conn = builder.Configuration.GetConnectionString("BicycleRentalDatabase")
+           ?? throw new InvalidOperationException("Connection string 'BicycleRentalDatabase' is not configured.");
 
 builder.Services.AddDbContext<BicycleRentalDbContext>(options =>
     options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
+
+builder.AddRabbitMQClient("rabbitmq",
+    configureConnectionFactory: factory =>
+    {
+        factory.AutomaticRecoveryEnabled = true;
+        factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(5);
+        factory.TopologyRecoveryEnabled = true;
+        factory.RequestedHeartbeat = TimeSpan.FromSeconds(30);
+        factory.DispatchConsumersAsync = true;
+    });
+
+builder.Services.AddHostedService<BicycleRentalRabbitMqConsumer>();
 
 var app = builder.Build();
 
