@@ -173,6 +173,18 @@ public class BicycleRentalRabbitMqConsumer(
         }
     }
 
+    /// <summary>
+    /// Processes a JSON message body by deserializing it into either a single entity or a batch of entities.
+    /// </summary>
+    /// <typeparam name="T">The type of the contract to deserialize the message into.</typeparam>
+    /// <param name="json">The raw JSON string received from the message queue.</param>
+    /// <param name="action">The asynchronous delegate to execute for each deserialized item.</param>
+    /// <returns>A task representing the asynchronous processing operation.</returns>
+    /// <remarks>
+    /// If the JSON starts with '[', it is treated as a collection. Each item in the collection is processed 
+    /// individually, and exceptions during the processing of a single item are logged but do not halt the batch.
+    /// If the JSON is a single object, it is processed directly.
+    /// </remarks>
     private async Task ProcessBatchOrSingleAsync<T>(string json, Func<T, Task> action)
     {
         var trimmedJson = json.TrimStart();

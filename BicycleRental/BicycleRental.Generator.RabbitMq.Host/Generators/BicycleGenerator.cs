@@ -19,7 +19,7 @@ public static class BicycleGenerator
         new Faker<BicycleCreateUpdateDto>()
             .WithRecord()
             .RuleFor(d => d.SerialNumber, f => $"SN-{f.Random.Replace("####")}-{f.Random.AlphaNumeric(3).ToUpper()}")
-            .RuleFor(d => d.ModelId, f => f.Random.Int(1, 20))
+            .RuleFor(d => d.ModelId, f => f.Random.Int(1, 12))
             .RuleFor(d => d.Color, f => f.PickRandom(_colors))
             .Generate(count);
 }
