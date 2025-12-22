@@ -1,0 +1,75 @@
+﻿@inject BicycleRentalApiWrapper Api
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Редактировать велосипед</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Модель</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="EditableBike.ModelId">
+                        @foreach (var m in Models)
+                        {
+                            <SelectItem Value="@m.Key">@m.Value</SelectItem>
+                        }
+                    </Select>
+                </Field>
+
+                <Field>
+                    <FieldLabel>Серийный номер</FieldLabel>
+                    <TextEdit @bind-Text="EditableBike.SerialNumber" />
+                </Field>
+
+                <Field>
+                    <FieldLabel>Цвет</FieldLabel>
+                    <TextEdit @bind-Text="EditableBike.Color" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="@(Blazorise.Color.Secondary)" Clicked="Close">Отмена</Button>
+                <Button Color="@(Blazorise.Color.Primary)" Clicked="Save">Сохранить</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    private Modal ModalRef { get; set; } = new();
+    private BicycleDto EditableBike { get; set; } = new();
+    private Dictionary<int, string> Models { get; set; } = new();
+
+    public Task Show(BicycleDto bike, Dictionary<int, string> modelMap)
+    {
+        EditableBike = new BicycleDto
+        {
+            Id = bike.Id,
+            ModelId = bike.ModelId,
+            SerialNumber = bike.SerialNumber,
+            Color = bike.Color
+        };
+        Models = modelMap;
+        return ModalRef.Show();
+    }
+
+    private async Task Save()
+    {
+        var updateDto = new BicycleCreateUpdateDto
+        {
+            ModelId = EditableBike.ModelId,
+            SerialNumber = EditableBike.SerialNumber,
+            Color = EditableBike.Color
+        };
+        await Api.UpdateBicycle(EditableBike.Id, updateDto);
+        await ModalRef.Hide();
+        await OnSaved.InvokeAsync();
+    }
+
+    private Task Close() => ModalRef.Hide();
+
+    [Parameter] public EventCallback OnSaved { get; set; }
+}

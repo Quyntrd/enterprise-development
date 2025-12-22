@@ -8,21 +8,17 @@
           ScrollHeight="480px"
           Virtualize="true"
           ShowPager="false">
+
     <DataGridColumns>
-        <DataGridColumn TItem="BicycleModelDto"
-                        Field="@nameof(BicycleModelDto.Id)"
-                        Caption="#" />
+        <DataGridColumn TItem="BicycleModelDto" Field="@nameof(BicycleModelDto.Id)" Caption="#" ReadOnly />
+        <DataGridColumn TItem="BicycleModelDto" Field="@nameof(BicycleModelDto.Name)" Caption="Название" />
 
-        <DataGridColumn TItem="BicycleModelDto"
-                        Field="@nameof(BicycleModelDto.Name)"
-                        Caption="Название" />
-
-        <DataGridColumn TItem="BicycleModelDto"
-                        Caption="Действия">
+        <DataGridColumn TItem="BicycleModelDto" Caption="Действия">
             <DisplayTemplate>
-                <Button Color="Color.Danger"
-                        Size="Size.Small"
-                        Clicked="() => OnDeleteRequested(context.Id)">
+                <Button Color="Color.Primary" Size="Size.Small" Clicked="@(() => OnEditClicked(context))">
+                    Изменить
+                </Button>
+                <Button Color="Color.Danger" Size="Size.Small" Margin="Margin.Is2.FromStart" Clicked="@(() => OnDeleteClicked(context.Id))">
                     Удалить
                 </Button>
             </DisplayTemplate>
@@ -31,13 +27,19 @@
 </DataGrid>
 
 @code {
-
     [Parameter] public IList<BicycleModelDto> Items { get; set; } = new List<BicycleModelDto>();
     [Parameter] public EventCallback<int> OnDelete { get; set; }
+    [Parameter] public EventCallback<BicycleModelDto> OnEdit { get; set; }
 
-    private async Task OnDeleteRequested(int id)
+    private async Task OnDeleteClicked(int id)
     {
         if (OnDelete.HasDelegate)
             await OnDelete.InvokeAsync(id);
+    }
+
+    private async Task OnEditClicked(BicycleModelDto model)
+    {
+        if (OnEdit.HasDelegate)
+            await OnEdit.InvokeAsync(model);
     }
 }

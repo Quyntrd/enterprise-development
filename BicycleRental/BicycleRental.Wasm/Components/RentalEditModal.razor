@@ -1,0 +1,100 @@
+﻿@inject BicycleRentalApiWrapper Api
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Редактировать аренду</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Велосипед</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="EditableRental.BicycleId">
+                        @foreach (var b in Bicycles)
+                        {
+                            <SelectItem Value="@b.Id">@($"{b.SerialNumber} (#{b.Id})")</SelectItem>
+                        }
+                    </Select>
+                </Field>
+
+                <Field>
+                    <FieldLabel>Арендатор</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="EditableRental.RenterId">
+                        @foreach (var r in Renters)
+                        {
+                            <SelectItem Value="@r.Id">@($"{r.FirstName} {r.LastName}")</SelectItem>
+                        }
+                    </Select>
+                </Field>
+
+                <Field>
+                    <FieldLabel>Дата и время начала</FieldLabel>
+                    <TextEdit @bind-Text="StartAtString" Placeholder="YYYY-MM-DDTHH:MM:SS" />
+                </Field>
+
+                <Field>
+                    <FieldLabel>Длительность (hh:mm:ss)</FieldLabel>
+                    <TextEdit @bind-Text="DurationString" Placeholder="03:00:00" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="Close">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="Save">Сохранить</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback<RentalDto> OnSaved { get; set; }
+
+    private Modal ModalRef { get; set; } = new();
+    private RentalDto EditableRental { get; set; } = new();
+    private IList<BicycleDto> Bicycles { get; set; } = new List<BicycleDto>();
+    private IList<RenterDto> Renters { get; set; } = new List<RenterDto>();
+
+    private string StartAtString { get; set; } = DateTime.UtcNow.ToString("s");
+    private string DurationString { get; set; } = "01:00:00";
+
+    public async Task Show(RentalDto rental)
+    {
+        Bicycles = (await Api.GetAllBicycles()).ToList();
+        Renters = (await Api.GetAllRenters()).ToList();
+
+        EditableRental = new RentalDto
+        {
+            Id = rental.Id,
+            BicycleId = rental.BicycleId,
+            RenterId = rental.RenterId,
+            StartAt = rental.StartAt,
+            DurationHours = rental.DurationHours,
+            TotalPrice = rental.TotalPrice
+        };
+
+        StartAtString = EditableRental.StartAt.ToString("s");
+        DurationString = EditableRental.DurationHours.ToString();
+
+        await ModalRef.Show();
+    }
+
+    private Task Close() => ModalRef.Hide();
+
+    private async Task Save()
+    {
+        var updateDto = new RentalCreateUpdateDto
+        {
+            BicycleId = EditableRental.BicycleId,
+            RenterId = EditableRental.RenterId,
+            StartAt = DateTime.Parse(StartAtString),
+            DurationHours = TimeSpan.Parse(DurationString)
+        };
+
+        await Api.UpdateRental(EditableRental.Id, updateDto);
+        await ModalRef.Hide();
+        if (OnSaved.HasDelegate)
+            await OnSaved.InvokeAsync(EditableRental);
+    }
+}

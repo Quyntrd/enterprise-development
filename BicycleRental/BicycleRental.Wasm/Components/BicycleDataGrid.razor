@@ -8,30 +8,49 @@
           ScrollHeight="480px"
           Virtualize="true"
           ShowPager="false">
+
     <DataGridColumns>
-        <DataGridColumn TItem="BicycleDto" Field="@nameof(BicycleDto.Id)" Caption="#" />
+
+        <DataGridColumn TItem="BicycleDto" Field="@nameof(BicycleDto.Id)" Caption="#" ReadOnly />
+
+        <DataGridColumn TItem="BicycleDto" Field="@nameof(BicycleDto.ModelId)" Caption="Модель">
+            <DisplayTemplate>
+                @((ModelMap.TryGetValue(context.ModelId, out var name)) ? name : $"#{context.ModelId}")
+            </DisplayTemplate>
+        </DataGridColumn>
+
         <DataGridColumn TItem="BicycleDto" Field="@nameof(BicycleDto.SerialNumber)" Caption="Серийный номер" />
         <DataGridColumn TItem="BicycleDto" Field="@nameof(BicycleDto.Color)" Caption="Цвет" />
+
         <DataGridColumn TItem="BicycleDto" Caption="Действия">
             <DisplayTemplate>
-                <Button Color="Color.Danger"
-                        Size="Size.Small"
-                        Clicked="() => OnDeleteRequested(context.Id)">
+                <Button Color="Color.Primary" Size="Size.Small" Clicked="@(() => OnEditClicked(context))">
+                    Изменить
+                </Button>
+                <Button Color="Color.Danger" Size="Size.Small" Margin="Margin.Is2.FromStart" Clicked="@(() => OnDeleteClicked(context.Id))">
                     Удалить
                 </Button>
             </DisplayTemplate>
         </DataGridColumn>
+
     </DataGridColumns>
 </DataGrid>
 
-
 @code {
     [Parameter] public IList<BicycleDto> Items { get; set; } = new List<BicycleDto>();
+    [Parameter] public Dictionary<int, string> ModelMap { get; set; } = new();
     [Parameter] public EventCallback<int> OnDelete { get; set; }
+    [Parameter] public EventCallback<BicycleDto> OnEdit { get; set; }
 
-    private async Task OnDeleteRequested(int id)
+    private async Task OnDeleteClicked(int id)
     {
         if (OnDelete.HasDelegate)
             await OnDelete.InvokeAsync(id);
+    }
+
+    private async Task OnEditClicked(BicycleDto bike)
+    {
+        if (OnEdit.HasDelegate)
+            await OnEdit.InvokeAsync(bike);
     }
 }

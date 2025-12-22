@@ -1,0 +1,56 @@
+﻿@inject BicycleRentalApiWrapper Api
+
+<Modal @ref="Modal">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Редактирование модели велосипеда</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Название</FieldLabel>
+                    <TextEdit @bind-Text="EditModel.Name" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="Close">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="Save">Сохранить</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback<BicycleModelDto> OnSaved { get; set; }
+
+    private Modal Modal = new();
+    private BicycleModelDto EditModel { get; set; } = new();
+
+    public Task Show(BicycleModelDto model)
+    {
+        EditModel = new BicycleModelDto
+        {
+            Id = model.Id,
+            Name = model.Name
+        };
+        return Modal.Show();
+    }
+
+    private async Task Close() => await Modal.Hide();
+
+    private async Task Save()
+    {
+        var updateDto = new BicycleModelCreateUpdateDto
+        {
+            Name = EditModel.Name
+        };
+
+        await Api.UpdateBicycleModel(EditModel.Id, updateDto);
+        await Modal.Hide();
+        if (OnSaved.HasDelegate)
+            await OnSaved.InvokeAsync(EditModel);
+    }
+}

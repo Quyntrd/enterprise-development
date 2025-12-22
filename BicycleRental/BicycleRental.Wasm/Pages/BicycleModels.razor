@@ -9,9 +9,7 @@
                 <h4>Модели велосипедов</h4>
             </Column>
             <Column ColumnSize="ColumnSize.IsAuto">
-                <Button Color="Color.Primary" Clicked="OpenCreateModal">
-                    Создать
-                </Button>
+                <Button Color="Color.Primary" Clicked="OpenCreateModal">Создать</Button>
             </Column>
         </Row>
     </CardHeader>
@@ -20,18 +18,19 @@
         <AppAlert Message="@alertMessage" Type="@alertType" />
 
         <BicycleModelDataGrid TItem="BicycleModelDto"
-                         Items="@BicycleModelList"
-                         OnDelete="ConfirmAndDelete" />
+                              Items="@BicycleModelList"
+                              OnDelete="ConfirmAndDelete"
+                              OnEdit="OpenEditModal" />
     </CardBody>
 </Card>
 
-
-<BicycleModelCreateModal @ref="CreateModal"
-                         OnCreated="Reload" />
+<BicycleModelCreateModal @ref="CreateModal" OnCreated="Reload" />
+<BicycleModelEditModal @ref="EditModal" OnSaved="HandleSaved" />
 
 @code {
     private IList<BicycleModelDto> BicycleModelList = new List<BicycleModelDto>();
     private BicycleModelCreateModal CreateModal = new();
+    private BicycleModelEditModal EditModal = new();
 
     private string? alertMessage;
     private string alertType = "danger";
@@ -42,14 +41,24 @@
     private async Task Reload()
     {
         BicycleModelList = (await Api.GetAllBicycleModels()).ToList();
+        StateHasChanged();
     }
 
     private async Task OpenCreateModal()
         => await CreateModal.Show();
 
+    private async Task OpenEditModal(BicycleModelDto model)
+        => await EditModal.Show(model);
+
+    private async Task HandleSaved(BicycleModelDto model)
+    {
+        await Reload();
+        ShowAlert($"Модель #{model.Id} успешно обновлена.", "success");
+    }
+
     private async Task ConfirmAndDelete(int id)
     {
-        var ok = await JS.InvokeAsync<bool>("confirm", $"Вы уверены, что хотите удалить модель #{id} ?");
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Вы уверены, что хотите удалить модель #{id}?");
         if (!ok) return;
 
         try

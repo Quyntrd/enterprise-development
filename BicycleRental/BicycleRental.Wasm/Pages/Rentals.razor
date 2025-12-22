@@ -15,13 +15,16 @@
     <CardBody style="height:650px; overflow:hidden">
         <AppAlert Message="@alertMessage" Type="@alertType" />
 
-        <RentalDataGrid Items="@RentalList" OnDelete="ConfirmAndDelete"
-                        BikeMap="@BikeMap" 
+        <RentalDataGrid Items="@RentalList"
+                        OnDelete="ConfirmAndDelete"
+                        OnEdit="OpenEditModal"
+                        BikeMap="@BikeMap"
                         RenterMap="@RenterMap" />
     </CardBody>
 </Card>
 
 <RentalCreateModal @ref="CreateModal" OnCreated="Reload" />
+<RentalEditModal @ref="EditModal" OnSaved="HandleSaved" />
 
 @code {
     private List<RentalDto> RentalList { get; set; } = new();
@@ -29,14 +32,13 @@
     private Dictionary<int, string> RenterMap { get; set; } = new();
 
     private RentalCreateModal CreateModal { get; set; } = new();
+    private RentalEditModal EditModal { get; set; } = new();
 
     private string? alertMessage;
     private string alertType = "danger";
 
     protected override async Task OnInitializedAsync()
-    {
-        await Reload();
-    }
+        => await Reload();
 
     private async Task Reload()
     {
@@ -51,6 +53,14 @@
     }
 
     private Task OpenCreate() => CreateModal.Show();
+
+    private async Task OpenEditModal(RentalDto rental) => await EditModal.Show(rental);
+
+    private async Task HandleSaved(RentalDto rental)
+    {
+        await Reload();
+        ShowAlert($"Аренда #{rental.Id} успешно обновлена.", "success");
+    }
 
     private async Task ConfirmAndDelete(int id)
     {

@@ -16,23 +16,23 @@
         <AppAlert Message="@alertMessage" Type="@alertType" />
 
         <RenterDataGrid Items="@RenterList"
-                        OnDelete="ConfirmAndDelete" />
+                        OnDelete="ConfirmAndDelete"
+                        OnEdit="OpenEditModal" />
     </CardBody>
 </Card>
 
 <RenterCreateModal @ref="CreateModal" OnCreated="Reload" />
+<RenterEditModal @ref="EditModal" OnSaved="HandleSaved" />
 
 @code {
     private List<RenterDto> RenterList { get; set; } = new();
     private RenterCreateModal CreateModal { get; set; } = new();
+    private RenterEditModal EditModal { get; set; } = new();
 
     private string? alertMessage;
     private string alertType = "danger";
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Reload();
-    }
+    protected override async Task OnInitializedAsync() => await Reload();
 
     private async Task Reload()
     {
@@ -42,6 +42,14 @@
     }
 
     private Task OpenCreate() => CreateModal.Show();
+
+    private async Task OpenEditModal(RenterDto renter) => await EditModal.Show(renter);
+
+    private async Task HandleSaved(RenterDto renter)
+    {
+        await Reload();
+        ShowAlert($"Арендатор #{renter.Id} успешно обновлён.", "success");
+    }
 
     private async Task ConfirmAndDelete(int id)
     {
@@ -53,7 +61,7 @@
             var rentals = await Api.GetRenterRentals(id);
             if (rentals != null && rentals.Any())
             {
-                ShowAlert($"Невозможно удалить арендатора #{id}: у него есть связанные аренды.", "danger");
+                ShowAlert($"Невозможно удалить арендатора #{id}: есть связанные аренды.", "danger");
                 return;
             }
 

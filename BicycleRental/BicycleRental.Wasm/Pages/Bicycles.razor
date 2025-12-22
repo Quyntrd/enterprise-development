@@ -17,16 +17,21 @@
 
         <BicycleDataGrid TItem="BicycleDto"
                          Items="@BicycleList"
-                         OnDelete="ConfirmAndDelete" />
+                         ModelMap="@ModelMap"
+                         OnDelete="ConfirmAndDelete"
+                         OnEdit="OpenEditModal" />
     </CardBody>
 </Card>
 
 <BicycleCreateModal @ref="CreateModal" OnCreated="Reload" />
 
+<BicycleEditModal @ref="EditModal" OnSaved="Reload" />
+
 @code {
     private List<BicycleDto> BicycleList { get; set; } = new();
     private Dictionary<int, string> ModelMap { get; set; } = new();
     private BicycleCreateModal CreateModal { get; set; } = new();
+    private BicycleEditModal EditModal { get; set; } = new();
 
     private string? alertMessage;
     private string alertType = "danger";
@@ -46,6 +51,11 @@
     }
 
     private Task OpenCreate() => CreateModal.Show();
+
+    private async Task OpenEditModal(BicycleDto bike)
+    {
+        await EditModal.Show(bike, ModelMap);
+    }
 
     private async Task ConfirmAndDelete(int id)
     {

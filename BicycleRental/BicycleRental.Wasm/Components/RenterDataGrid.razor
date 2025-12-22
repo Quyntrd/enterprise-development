@@ -1,36 +1,23 @@
-﻿<DataGrid TItem="RenterDto" 
-          Data="Items" 
-          Responsive 
-          Striped 
+﻿<DataGrid TItem="RenterDto"
+          Data="Items"
+          Responsive
+          Striped
           Scrollable="true"
           ScrollHeight="480px"
           Virtualize="true"
           ShowPager="false">
+
     <DataGridColumns>
-        <DataGridColumn TItem="RenterDto" Field="@nameof(RenterDto.Id)" Caption="#" />
-        <DataGridColumn TItem="RenterDto" Caption="Фамилия">
-            <DisplayTemplate>
-                @context.LastName
-            </DisplayTemplate>
-        </DataGridColumn>
-        <DataGridColumn TItem="RenterDto" Caption="Имя">
-            <DisplayTemplate>
-                @context.FirstName
-            </DisplayTemplate>
-        </DataGridColumn>
-        <DataGridColumn TItem="RenterDto" Caption="Отчество">
-            <DisplayTemplate>
-                @context.Patronymic
-            </DisplayTemplate>
-        </DataGridColumn>
-        <DataGridColumn TItem="RenterDto" Caption="Телефон">
-            <DisplayTemplate>
-                @context.Phone
-            </DisplayTemplate>
-        </DataGridColumn>
+        <DataGridColumn TItem="RenterDto" Field="@nameof(RenterDto.Id)" Caption="#" ReadOnly />
+        <DataGridColumn TItem="RenterDto" Field="@nameof(RenterDto.LastName)" Caption="Фамилия" />
+        <DataGridColumn TItem="RenterDto" Field="@nameof(RenterDto.FirstName)" Caption="Имя" />
+        <DataGridColumn TItem="RenterDto" Field="@nameof(RenterDto.Patronymic)" Caption="Отчество" />
+        <DataGridColumn TItem="RenterDto" Field="@nameof(RenterDto.Phone)" Caption="Телефон" />
+
         <DataGridColumn TItem="RenterDto" Caption="Действия">
             <DisplayTemplate>
-                <Button Color="Color.Danger" Size="Size.Small" Clicked="() => OnDeleteRequested(context.Id)">Удалить</Button>
+                <Button Color="Color.Primary" Size="Size.Small" Clicked="@(() => OnEditClicked(context))">Изменить</Button>
+                <Button Color="Color.Danger" Size="Size.Small" Margin="Margin.Is2.FromStart" Clicked="@(() => OnDeleteClicked(context.Id))">Удалить</Button>
             </DisplayTemplate>
         </DataGridColumn>
     </DataGridColumns>
@@ -39,10 +26,17 @@
 @code {
     [Parameter] public IList<RenterDto> Items { get; set; } = new List<RenterDto>();
     [Parameter] public EventCallback<int> OnDelete { get; set; }
+    [Parameter] public EventCallback<RenterDto> OnEdit { get; set; }
 
-    private async Task OnDeleteRequested(int id)
+    private async Task OnDeleteClicked(int id)
     {
         if (OnDelete.HasDelegate)
             await OnDelete.InvokeAsync(id);
+    }
+
+    private async Task OnEditClicked(RenterDto renter)
+    {
+        if (OnEdit.HasDelegate)
+            await OnEdit.InvokeAsync(renter);
     }
 }

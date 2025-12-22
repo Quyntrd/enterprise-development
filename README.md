@@ -1,10 +1,9 @@
-# 🚲 BicycleRental API — Обновлённый README
-
-![.NET](https://img.shields.io/badge/.NET-8.0-blue) ![C#](https://img.shields.io/badge/C%23-12.0-blue) ![AutoMapper](https://img.shields.io/badge/AutoMapper-12.0.1-orange) ![Swagger](https://img.shields.io/badge/Swagger-6.7.0-green) ![EF Core](https://img.shields.io/badge/EF%20Core-8.0-blue) ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-enabled-orange)
+# 🚲 BicycleRental API
+![.NET](https://img.shields.io/badge/.NET-8.0-blue) ![C#](https://img.shields.io/badge/C%23-12.0-blue) ![AutoMapper](https://img.shields.io/badge/AutoMapper-12.0.1-orange) ![Swagger](https://img.shields.io/badge/Swagger-6.7.0-green) ![EF Core](https://img.shields.io/badge/EF%20Core-8.0-blue) ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-enabled-orange) ![Blazor](https://img.shields.io/badge/Blazor-512BD4?style=flat&logo=Blazor&logoColor=gray&label=.NET&labelColor=e9e9e9)
 
 ## Краткое описание
 
-BicycleRental — примерная реализация сервисной архитектуры для управления прокатом велосипедов. Проект разделён на несколько слоёв: `Domain`, `Application.Contracts`, `Application`, `Infrastructure` (EF Core), `Api` и `Generator.RabbitMq.Host`.
+BicycleRental — реализация сервисной архитектуры для управления прокатом велосипедов. Проект разделён на несколько слоёв: `Domain`, `Application.Contracts`, `Application`, `Infrastructure` (EF Core), `Api`,  `Generator.RabbitMq.Host`, `Wasm`.
 
 Проект реализует асинхронные CRUD-сервисы, модель данных для велосипедов, моделей велосипедов, арендаторов и самих аренды, а также вспомогательные механизмы для генерации тестовых данных и публикации их в RabbitMQ.
 
@@ -18,6 +17,7 @@ BicycleRental — примерная реализация сервисной а�
 - `BicycleRental.Infrastructure.EfCore` — реализации репозиториев через EF Core и контекст `BicycleRentalDbContext`.
 - `BicycleRental.Api` — веб-API с контроллерами, Swagger и конфигурацией.
 - `BicycleRental.Generator.RabbitMq.Host` — сервис генерации тестовых DTO и публикации в RabbitMQ.
+- `BicycleRental.Wasm` — клиентская часть с реализацией основных операций по удалению, созданию записей.
 
 ---
 
@@ -135,5 +135,13 @@ CrudControllerBase<TDto, TCreateUpdateDto, TKey>
 - Swagger с подключением XML-комментариев для всех сборок.
 - Настройка RabbitMQ клиента и фоновый сервис `BicycleRentalRabbitMqConsumer`.
 - Миграции БД выполняются в режиме разработки (при `app.Environment.IsDevelopment()` вызывается `db.Database.Migrate()`).
+
+---
+
+
+## Wasm - клиент
+
+- Реализован на Blazor.
+- Возможность создания, удаления, изменения записей.
 
 ---

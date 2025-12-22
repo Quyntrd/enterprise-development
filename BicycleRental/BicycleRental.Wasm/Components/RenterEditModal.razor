@@ -1,0 +1,74 @@
+﻿@inject BicycleRentalApiWrapper Api
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Редактировать арендатора</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Фамилия</FieldLabel>
+                    <TextEdit @bind-Text="EditableRenter.LastName" />
+                </Field>
+                <Field>
+                    <FieldLabel>Имя</FieldLabel>
+                    <TextEdit @bind-Text="EditableRenter.FirstName" />
+                </Field>
+                <Field>
+                    <FieldLabel>Отчество</FieldLabel>
+                    <TextEdit @bind-Text="EditableRenter.Patronymic" />
+                </Field>
+                <Field>
+                    <FieldLabel>Телефон</FieldLabel>
+                    <TextEdit @bind-Text="EditableRenter.Phone" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="Close">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="Save">Сохранить</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback<RenterDto> OnSaved { get; set; }
+
+    private Modal ModalRef { get; set; } = new();
+    private RenterDto EditableRenter { get; set; } = new();
+
+    public Task Show(RenterDto renter)
+    {
+        EditableRenter = new RenterDto
+        {
+            Id = renter.Id,
+            FirstName = renter.FirstName,
+            LastName = renter.LastName,
+            Patronymic = renter.Patronymic,
+            Phone = renter.Phone
+        };
+        return ModalRef.Show();
+    }
+
+    private Task Close() => ModalRef.Hide();
+
+    private async Task Save()
+    {
+        var updateDto = new RenterCreateUpdateDto
+        {
+            FirstName = EditableRenter.FirstName,
+            LastName = EditableRenter.LastName,
+            Patronymic = EditableRenter.Patronymic,
+            Phone = EditableRenter.Phone
+        };
+
+        await Api.UpdateRenter(EditableRenter.Id, updateDto);
+        await ModalRef.Hide();
+        if (OnSaved.HasDelegate)
+            await OnSaved.InvokeAsync(EditableRenter);
+    }
+}
