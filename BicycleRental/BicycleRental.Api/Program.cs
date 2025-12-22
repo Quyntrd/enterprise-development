@@ -40,33 +40,35 @@ builder.Services.AddSwaggerGen(c =>
     var xml = Path.Combine(AppContext.BaseDirectory, $"{assembly.GetName().Name}.xml");
     if (File.Exists(xml)) c.IncludeXmlComments(xml);
 
-    foreach (var refAsm in assembly.GetReferencedAssemblies())
-    {
-        var xmlPath = Path.Combine(AppContext.BaseDirectory, $"{refAsm.Name}.xml");
-        if (File.Exists(xmlPath)) c.IncludeXmlComments(xmlPath);
-    }
-
     c.SchemaFilter<BicycleRental.Api.Swagger.TimeSpanSchemaFilter>();
 });
 
 var conn = builder.Configuration.GetConnectionString("BicycleRentalDatabase");
-
 builder.Services.AddDbContext<BicycleRentalDbContext>(options =>
     options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
 
-builder.AddRabbitMQClient("rabbitmq",
-    configureConnectionFactory: factory =>
-    {
-        factory.AutomaticRecoveryEnabled = true;
-        factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(5);
-        factory.TopologyRecoveryEnabled = true;
-        factory.RequestedHeartbeat = TimeSpan.FromSeconds(30);
-        factory.DispatchConsumersAsync = true;
-    });
+builder.AddRabbitMQClient("rabbitmq", configureConnectionFactory: factory =>
+{
+    factory.AutomaticRecoveryEnabled = true;
+    factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(5);
+    factory.TopologyRecoveryEnabled = true;
+    factory.RequestedHeartbeat = TimeSpan.FromSeconds(30);
+    factory.DispatchConsumersAsync = true;
+});
+
+builder.WebHost.UseStaticWebAssets();
 
 builder.Services.AddHostedService<BicycleRentalRabbitMqConsumer>();
 
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.CheckConsentNeeded = context => true;
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+});
+
 var app = builder.Build();
+
+app.UseCookiePolicy();
 
 app.MapDefaultEndpoints();
 
@@ -76,14 +78,27 @@ if (app.Environment.IsDevelopment())
     var db = scope.ServiceProvider.GetRequiredService<BicycleRentalDbContext>();
     db.Database.Migrate();
 
+    app.UseWebAssemblyDebugging();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
 
+app.UseRouting();
+
+app.UseCors(policy => policy
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
+app.UseHttpsRedirection();
+app.UseHsts();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+	<StaticWebAssetsEnabled>true</StaticWebAssetsEnabled>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -20,9 +21,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\BicycleRental.Wasm\BicycleRental.Wasm.csproj" />
     <ProjectReference Include="..\BicycleRental.Application.Contracts\BicycleRental.Application.Contracts.csproj" />
     <ProjectReference Include="..\BicycleRental.Application\BicycleRental.Application.csproj" />
     <ProjectReference Include="..\BicycleRental.Domain\BicycleRental.Domain.csproj" />

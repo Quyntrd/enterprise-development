@@ -1,0 +1,79 @@
+﻿@page "/bicycle-models"
+@inject BicycleRentalApiWrapper Api
+@inject IJSRuntime JS
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h4>Модели велосипедов</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreateModal">
+                    Создать
+                </Button>
+            </Column>
+        </Row>
+    </CardHeader>
+
+    <CardBody style="height:600px; overflow:hidden">
+        <AppAlert Message="@alertMessage" Type="@alertType" />
+
+        <BicycleModelDataGrid TItem="BicycleModelDto"
+                         Items="@BicycleModelList"
+                         OnDelete="ConfirmAndDelete" />
+    </CardBody>
+</Card>
+
+
+<BicycleModelCreateModal @ref="CreateModal"
+                         OnCreated="Reload" />
+
+@code {
+    private IList<BicycleModelDto> BicycleModelList = new List<BicycleModelDto>();
+    private BicycleModelCreateModal CreateModal = new();
+
+    private string? alertMessage;
+    private string alertType = "danger";
+
+    protected override async Task OnInitializedAsync()
+        => await Reload();
+
+    private async Task Reload()
+    {
+        BicycleModelList = (await Api.GetAllBicycleModels()).ToList();
+    }
+
+    private async Task OpenCreateModal()
+        => await CreateModal.Show();
+
+    private async Task ConfirmAndDelete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Вы уверены, что хотите удалить модель #{id} ?");
+        if (!ok) return;
+
+        try
+        {
+            var bikes = await Api.GetAllBicycles();
+            if (bikes.Any(b => b.ModelId == id))
+            {
+                ShowAlert($"Невозможно удалить модель #{id}: существуют велосипеды с этой моделью.", "danger");
+                return;
+            }
+
+            await Api.DeleteBicycleModel(id);
+            ShowAlert($"Модель #{id} успешно удалена.", "success");
+            await Reload();
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Ошибка при удалении модели #{id}: {ex.Message}", "danger");
+        }
+    }
+
+    private void ShowAlert(string message, string type)
+    {
+        alertMessage = message;
+        alertType = type;
+    }
+}

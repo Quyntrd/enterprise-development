@@ -1,0 +1,75 @@
+﻿@page "/renters"
+@inject BicycleRentalApiWrapper Api
+@inject IJSRuntime JS
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto"><h4>Арендаторы</h4></Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreate">Создать</Button>
+            </Column>
+        </Row>
+    </CardHeader>
+
+    <CardBody style="height:600px; overflow:hidden">
+        <AppAlert Message="@alertMessage" Type="@alertType" />
+
+        <RenterDataGrid Items="@RenterList"
+                        OnDelete="ConfirmAndDelete" />
+    </CardBody>
+</Card>
+
+<RenterCreateModal @ref="CreateModal" OnCreated="Reload" />
+
+@code {
+    private List<RenterDto> RenterList { get; set; } = new();
+    private RenterCreateModal CreateModal { get; set; } = new();
+
+    private string? alertMessage;
+    private string alertType = "danger";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Reload();
+    }
+
+    private async Task Reload()
+    {
+        var res = await Api.GetAllRenters();
+        RenterList = res?.ToList() ?? new List<RenterDto>();
+        StateHasChanged();
+    }
+
+    private Task OpenCreate() => CreateModal.Show();
+
+    private async Task ConfirmAndDelete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Вы уверены, что хотите удалить арендатора #{id}?");
+        if (!ok) return;
+
+        try
+        {
+            var rentals = await Api.GetRenterRentals(id);
+            if (rentals != null && rentals.Any())
+            {
+                ShowAlert($"Невозможно удалить арендатора #{id}: у него есть связанные аренды.", "danger");
+                return;
+            }
+
+            await Api.DeleteRenter(id);
+            ShowAlert($"Арендатор #{id} успешно удалён.", "success");
+            await Reload();
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Ошибка при удалении арендатора #{id}: {ex.Message}", "danger");
+        }
+    }
+
+    private void ShowAlert(string message, string type = "danger")
+    {
+        alertMessage = message;
+        alertType = type;
+    }
+}

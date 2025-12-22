@@ -18,12 +18,18 @@ var rabbitMq = builder
     .AddRabbitMQ("rabbitmq", userName: rabbitUser, password: rabbitPassword)
     .WithManagementPlugin();
 
-builder.AddProject<Projects.BicycleRental_Api>("bicyclerental-api-host")
+var api = builder.AddProject<Projects.BicycleRental_Api>("bicyclerental-api-host")
     .WithReference(bicycleDb, "BicycleRentalDatabase")
     .WithReference(rabbitMq)
+    .WithExternalHttpEndpoints()
     .WithEnvironment("RabbitMq__QueueName", rabbitQueue)
     .WaitFor(bicycleDb)
     .WaitFor(rabbitMq);
+
+builder.AddProject<Projects.BicycleRental_Wasm>("bicyclerental-wasm")
+    .WithReference(api)
+    .WithExternalHttpEndpoints()
+    .WaitFor(api);
 
 builder.AddProject<Projects.BicycleRental_Generator_RabbitMq_Host>("bicyclerental-generator-rabbitmq-host")
     .WithReference(rabbitMq)

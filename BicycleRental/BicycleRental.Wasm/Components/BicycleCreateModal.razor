@@ -1,0 +1,79 @@
+﻿@inject BicycleRentalApiWrapper Api
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новый велосипед</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Модель</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="SelectedModelId">
+                        <SelectItem Value="0">-- выбрать модель --</SelectItem>
+                        @foreach (var m in Models)
+                        {
+                            <SelectItem Value="@m.Id">@m.Name</SelectItem>
+                        }
+                    </Select>
+                </Field>
+
+                <Field>
+                    <FieldLabel>Серийный номер</FieldLabel>
+                    <TextEdit @bind-Text="SerialNumber" />
+                </Field>
+
+                <Field>
+                    <FieldLabel>Цвет</FieldLabel>
+                    <TextEdit @bind-Text="Color" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="@(Blazorise.Color.Secondary)" Clicked="Close">Отмена</Button>
+                <Button Color="@(Blazorise.Color.Primary)" Clicked="Create">Создать</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback OnCreated { get; set; }
+
+    private Modal ModalRef { get; set; } = new();
+    private IList<BicycleModelDto> Models { get; set; } = new List<BicycleModelDto>();
+    private int SelectedModelId { get; set; }
+    private string SerialNumber { get; set; } = string.Empty;
+    private string Color { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Models = (await Api.GetAllBicycleModels()).ToList();
+    }
+
+    public Task Show()
+    {
+        SelectedModelId = 0;
+        SerialNumber = string.Empty;
+        Color = string.Empty;
+        return ModalRef.Show();
+    }
+
+    private Task Close() => ModalRef.Hide();
+
+    private async Task Create()
+    {
+        var dto = new BicycleCreateUpdateDto
+        {
+            ModelId = SelectedModelId,
+            SerialNumber = SerialNumber,
+            Color = Color
+        };
+
+        await Api.CreateBicycle(dto);
+        await ModalRef.Hide();
+        await OnCreated.InvokeAsync();
+    }
+}

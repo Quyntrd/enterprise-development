@@ -1,0 +1,121 @@
+﻿@using System.Reflection
+@inject BicycleRental.Wasm.Api.BicycleRentalApiWrapper Api
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новая аренда</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Велосипед</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="SelectedBicycleId">
+                        <SelectItem Value="0">-- выбрать велосипед --</SelectItem>
+                        @foreach (var b in Bicycles)
+                        {
+                            <SelectItem Value="@b.Id">@($"{b.SerialNumber} (#{b.Id})")</SelectItem>
+                        }
+                    </Select>
+                </Field>
+
+                <Field>
+                    <FieldLabel>Арендатор</FieldLabel>
+                    <Select TValue="int" @bind-SelectedValue="SelectedRenterId">
+                        <SelectItem Value="0">-- выбрать арендатора --</SelectItem>
+                        @foreach (var r in Renters)
+                        {
+                            <SelectItem Value="@r.Id">@($"{r.FirstName} {r.LastName}")</SelectItem>
+                        }
+                    </Select>
+                </Field>
+
+                <Field>
+                    <FieldLabel>Дата и время начала</FieldLabel>
+                    <TextEdit @bind-Text="StartAtString" Placeholder="YYYY-MM-DDTHH:MM:SS (например 2025-12-21T14:30:00)" />
+                </Field>
+
+                <Field>
+                    <FieldLabel>Длительность (hh:mm:ss)</FieldLabel>
+                    <TextEdit @bind-Text="DurationString" Placeholder="03:00:00" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="Close">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="Create">Создать</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback OnCreated { get; set; }
+
+    private Modal ModalRef { get; set; } = new();
+    private IList<BicycleDto> Bicycles { get; set; } = new List<BicycleDto>();
+    private IList<RenterDto> Renters { get; set; } = new List<RenterDto>();
+
+    private int SelectedBicycleId { get; set; }
+    private int SelectedRenterId { get; set; }
+    private string StartAtString { get; set; } = DateTime.UtcNow.ToString("s");
+    private string DurationString { get; set; } = "01:00:00";
+
+    public async Task Show()
+    {
+        Bicycles = (await Api.GetAllBicycles()).ToList();
+        Renters = (await Api.GetAllRenters()).ToList();
+        SelectedBicycleId = Bicycles.FirstOrDefault()?.Id ?? 0;
+        SelectedRenterId = Renters.FirstOrDefault()?.Id ?? 0;
+        StartAtString = DateTime.UtcNow.ToString("s");
+        DurationString = "01:00:00";
+        await ModalRef.Show();
+    }
+
+    private Task Close() => ModalRef.Hide();
+
+    private async Task Create()
+    {
+        var dto = new RentalCreateUpdateDto();
+
+        var t = dto.GetType();
+        var pBicycle = t.GetProperty("BicycleId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        var pRenter = t.GetProperty("RenterId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        if (pBicycle != null) pBicycle.SetValue(dto, Convert.ChangeType(SelectedBicycleId, pBicycle.PropertyType));
+        if (pRenter != null) pRenter.SetValue(dto, Convert.ChangeType(SelectedRenterId, pRenter.PropertyType));
+
+        var pStart = t.GetProperty("StartAt", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        if (pStart != null)
+        {
+            if (pStart.PropertyType == typeof(string))
+                pStart.SetValue(dto, StartAtString);
+            else if (pStart.PropertyType == typeof(DateTime) || pStart.PropertyType == typeof(DateTime?))
+                pStart.SetValue(dto, DateTime.Parse(StartAtString));
+            else if (pStart.PropertyType == typeof(DateTimeOffset) || pStart.PropertyType == typeof(DateTimeOffset?))
+                pStart.SetValue(dto, DateTimeOffset.Parse(StartAtString));
+        }
+
+        var pDuration = t.GetProperty("DurationHours", BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        if (pDuration != null)
+        {
+            if (pDuration.PropertyType == typeof(string))
+            {
+                pDuration.SetValue(dto, DurationString);
+            }
+            else if (pDuration.PropertyType == typeof(TimeSpan))
+            {
+                pDuration.SetValue(dto, TimeSpan.Parse(DurationString));
+            }
+            else if (pDuration.PropertyType == typeof(TimeSpan?))
+            {
+                pDuration.SetValue(dto, TimeSpan.Parse(DurationString));
+            }
+        }
+
+        await Api.CreateRental(dto);
+        await ModalRef.Hide();
+        await OnCreated.InvokeAsync();
+    }
+}

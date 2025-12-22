@@ -1,0 +1,77 @@
+﻿@page "/rentals"
+@inject BicycleRentalApiWrapper Api
+@inject IJSRuntime JS
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto"><h4>Аренды</h4></Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreate">Создать</Button>
+            </Column>
+        </Row>
+    </CardHeader>
+
+    <CardBody style="height:650px; overflow:hidden">
+        <AppAlert Message="@alertMessage" Type="@alertType" />
+
+        <RentalDataGrid Items="@RentalList" OnDelete="ConfirmAndDelete"
+                        BikeMap="@BikeMap" 
+                        RenterMap="@RenterMap" />
+    </CardBody>
+</Card>
+
+<RentalCreateModal @ref="CreateModal" OnCreated="Reload" />
+
+@code {
+    private List<RentalDto> RentalList { get; set; } = new();
+    private Dictionary<int, string> BikeMap { get; set; } = new();
+    private Dictionary<int, string> RenterMap { get; set; } = new();
+
+    private RentalCreateModal CreateModal { get; set; } = new();
+
+    private string? alertMessage;
+    private string alertType = "danger";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Reload();
+    }
+
+    private async Task Reload()
+    {
+        var bikes = (await Api.GetAllBicycles()).ToList();
+        BikeMap = bikes.ToDictionary(b => b.Id, b => $"{b.SerialNumber} #{b.Id}");
+
+        var renters = (await Api.GetAllRenters()).ToList();
+        RenterMap = renters.ToDictionary(r => r.Id, r => $"{r.FirstName} {r.LastName}");
+
+        RentalList = (await Api.GetAllRentals()).ToList();
+        StateHasChanged();
+    }
+
+    private Task OpenCreate() => CreateModal.Show();
+
+    private async Task ConfirmAndDelete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Вы уверены, что хотите удалить аренду #{id}?");
+        if (!ok) return;
+
+        try
+        {
+            await Api.DeleteRental(id);
+            ShowAlert($"Аренда #{id} удалена.", "success");
+            await Reload();
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Ошибка при удалении аренды #{id}: {ex.Message}", "danger");
+        }
+    }
+
+    private void ShowAlert(string message, string type = "danger")
+    {
+        alertMessage = message;
+        alertType = type;
+    }
+}

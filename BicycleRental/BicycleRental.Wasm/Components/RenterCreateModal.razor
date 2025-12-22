@@ -1,0 +1,58 @@
+﻿@inject BicycleRentalApiWrapper Api
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новый арендатор</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Фамилия</FieldLabel>
+                    <TextEdit @bind-Text="NewRenter.LastName" />
+                </Field>
+                <Field>
+                    <FieldLabel>Имя</FieldLabel>
+                    <TextEdit @bind-Text="NewRenter.FirstName" />
+                </Field>
+                <Field>
+                    <FieldLabel>Отчество</FieldLabel>
+                    <TextEdit @bind-Text="NewRenter.Patronymic" />
+                </Field>
+                <Field>
+                    <FieldLabel>Телефон</FieldLabel>
+                    <TextEdit @bind-Text="NewRenter.Phone" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="Close">Отмена</Button>
+                <Button Color="Color.Primary" Clicked="Create">Создать</Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback OnCreated { get; set; }
+
+    private Modal ModalRef { get; set; } = new();
+    private RenterCreateUpdateDto NewRenter { get; set; } = new();
+
+    public Task Show()
+    {
+        NewRenter = new RenterCreateUpdateDto();
+        return ModalRef.Show();
+    }
+
+    private Task Close() => ModalRef.Hide();
+
+    private async Task Create()
+    {
+        await Api.CreateRenter(NewRenter);
+        await ModalRef.Hide();
+        await OnCreated.InvokeAsync();
+    }
+}

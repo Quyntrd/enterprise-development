@@ -1,0 +1,43 @@
+﻿@typeparam TItem
+
+<DataGrid TItem="BicycleModelDto"
+          Data="Items"
+          Responsive
+          Striped
+          Scrollable="true"
+          ScrollHeight="480px"
+          Virtualize="true"
+          ShowPager="false">
+    <DataGridColumns>
+        <DataGridColumn TItem="BicycleModelDto"
+                        Field="@nameof(BicycleModelDto.Id)"
+                        Caption="#" />
+
+        <DataGridColumn TItem="BicycleModelDto"
+                        Field="@nameof(BicycleModelDto.Name)"
+                        Caption="Название" />
+
+        <DataGridColumn TItem="BicycleModelDto"
+                        Caption="Действия">
+            <DisplayTemplate>
+                <Button Color="Color.Danger"
+                        Size="Size.Small"
+                        Clicked="() => OnDeleteRequested(context.Id)">
+                    Удалить
+                </Button>
+            </DisplayTemplate>
+        </DataGridColumn>
+    </DataGridColumns>
+</DataGrid>
+
+@code {
+
+    [Parameter] public IList<BicycleModelDto> Items { get; set; } = new List<BicycleModelDto>();
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+
+    private async Task OnDeleteRequested(int id)
+    {
+        if (OnDelete.HasDelegate)
+            await OnDelete.InvokeAsync(id);
+    }
+}

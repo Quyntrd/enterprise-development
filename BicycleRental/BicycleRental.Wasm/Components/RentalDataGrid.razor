@@ -1,0 +1,50 @@
+﻿<DataGrid TItem="RentalDto" 
+          Data="Items"
+          Responsive
+          Striped
+          Scrollable="true"
+          ScrollHeight="480px"
+          Virtualize="true"
+          ShowPager="false">
+    <DataGridColumns>
+        <DataGridColumn TItem="RentalDto" Field="@nameof(RentalDto.Id)" Caption="#" />
+        <DataGridColumn TItem="RentalDto" Caption="Велосипед">
+            <DisplayTemplate>
+                @{
+                    var bikeName = BikeMap.TryGetValue(context.BicycleId, out var bn) ? bn : $"#{context.BicycleId}";
+                }
+                @bikeName
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="RentalDto" Caption="Арендатор">
+            <DisplayTemplate>
+                @{
+                    var renterName = RenterMap.TryGetValue(context.RenterId, out var rn) ? rn : $"#{context.RenterId}";
+                }
+                @renterName
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="RentalDto" Field="@nameof(RentalDto.StartAt)" Caption="Начало" />
+        <DataGridColumn TItem="RentalDto" Field="@nameof(RentalDto.DurationHours)" Caption="Длительность" />
+        <DataGridColumn TItem="RentalDto" Field="@nameof(RentalDto.TotalPrice)" Caption="Итог" />
+        <DataGridColumn Caption="Действия">
+            <DisplayTemplate>
+                <Button Color="Color.Danger" Size="Size.Small" Clicked="() => OnDeleteRequested(context.Id)">Удалить</Button>
+            </DisplayTemplate>
+        </DataGridColumn>
+    </DataGridColumns>
+</DataGrid>
+
+@code {
+    [Parameter] public IList<RentalDto> Items { get; set; } = new List<RentalDto>();
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+
+    [Parameter] public Dictionary<int, string> BikeMap { get; set; } = new();
+    [Parameter] public Dictionary<int, string> RenterMap { get; set; } = new();
+
+    private async Task OnDeleteRequested(int id)
+    {
+        if (OnDelete.HasDelegate)
+            await OnDelete.InvokeAsync(id);
+    }
+}

@@ -1,0 +1,48 @@
+﻿<DataGrid TItem="RenterDto" 
+          Data="Items" 
+          Responsive 
+          Striped 
+          Scrollable="true"
+          ScrollHeight="480px"
+          Virtualize="true"
+          ShowPager="false">
+    <DataGridColumns>
+        <DataGridColumn TItem="RenterDto" Field="@nameof(RenterDto.Id)" Caption="#" />
+        <DataGridColumn TItem="RenterDto" Caption="Фамилия">
+            <DisplayTemplate>
+                @context.LastName
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="RenterDto" Caption="Имя">
+            <DisplayTemplate>
+                @context.FirstName
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="RenterDto" Caption="Отчество">
+            <DisplayTemplate>
+                @context.Patronymic
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="RenterDto" Caption="Телефон">
+            <DisplayTemplate>
+                @context.Phone
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="RenterDto" Caption="Действия">
+            <DisplayTemplate>
+                <Button Color="Color.Danger" Size="Size.Small" Clicked="() => OnDeleteRequested(context.Id)">Удалить</Button>
+            </DisplayTemplate>
+        </DataGridColumn>
+    </DataGridColumns>
+</DataGrid>
+
+@code {
+    [Parameter] public IList<RenterDto> Items { get; set; } = new List<RenterDto>();
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+
+    private async Task OnDeleteRequested(int id)
+    {
+        if (OnDelete.HasDelegate)
+            await OnDelete.InvokeAsync(id);
+    }
+}

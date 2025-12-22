@@ -1,0 +1,26 @@
+﻿@namespace BicycleRental.Wasm.Shared
+
+@if (!string.IsNullOrEmpty(Message))
+{
+    <div class="alert @AlertCssClass alert-dismissible fade show" role="alert">
+        @Message
+        <button type="button"
+                class="btn-close"
+                aria-label="Close"
+                @onclick="() => Message = null">
+        </button>
+    </div>
+}
+
+@code {
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string Type { get; set; } = "danger";
+
+    private string AlertCssClass => Type switch
+    {
+        "success" => "alert-success",
+        "warning" => "alert-warning",
+        "info" => "alert-info",
+        _ => "alert-danger"
+    };
+}

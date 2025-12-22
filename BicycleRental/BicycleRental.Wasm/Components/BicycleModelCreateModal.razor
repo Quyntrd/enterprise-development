@@ -1,0 +1,50 @@
+﻿@inject BicycleRentalApiWrapper Api
+
+<Modal @ref="Modal">
+    <ModalContent Centered>
+        <Form>
+            <ModalHeader>
+                <ModalTitle>Новая модель велосипеда</ModalTitle>
+                <CloseButton Clicked="Close" />
+            </ModalHeader>
+
+            <ModalBody>
+                <Field>
+                    <FieldLabel>Название</FieldLabel>
+                    <TextEdit @bind-Text="NewModel.Name" />
+                </Field>
+            </ModalBody>
+
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="Close">
+                    Отмена
+                </Button>
+                <Button Color="Color.Primary" Clicked="Create">
+                    Создать
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter]
+    public EventCallback OnCreated { get; set; }
+
+    private Modal Modal = new();
+    private BicycleModelCreateUpdateDto NewModel = new();
+
+    public async Task Show()
+        => await Modal.Show();
+
+    private async Task Close()
+        => await Modal.Hide();
+
+    private async Task Create()
+    {
+        await Api.CreateBicycleModel(NewModel);
+        NewModel = new BicycleModelCreateUpdateDto();
+        await Modal.Hide();
+        await OnCreated.InvokeAsync();
+    }
+}

@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BicycleRental.Api\BicycleRental.Api.csproj" />
     <ProjectReference Include="..\BicycleRental.Generator.RabbitMq.Host\BicycleRental.Generator.RabbitMq.Host.csproj" />
+    <ProjectReference Include="..\BicycleRental.Wasm\BicycleRental.Wasm.csproj" />
   </ItemGroup>
 
 </Project>

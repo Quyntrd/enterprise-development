@@ -1,0 +1,64 @@
+﻿@page "/"
+@using BicycleRental.Wasm.Api
+@inject NavigationManager Navigation
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="display-6">Добро пожаловать в Bicycle Rental</h1>
+                    <p class="lead mt-3">
+                        Это административная панель управления прокатом велосипедов.
+                    </p>
+
+                    <p>
+                        Для управления сущностями (велосипеды, модели, аренды, арендаторы) используйте меню слева.
+                        Нажмите на соответствующий раздел — там вы сможете просматривать, добавлять и удалять записи.
+                    </p>
+
+                    <ul>
+                        <li>Чтобы создать новую запись — нажмите кнопку «Создать» в нужном разделе.</li>
+                        <li>Если удаление невозможно из-за зависимых записей (например, модель используется в велосипедах),
+                            вы увидите понятное сообщение об этом.</li>
+                    </ul>
+
+                    <div class="mt-4">
+                        <button class="btn btn-primary me-2"
+                                @onclick="@(() => Navigation.NavigateTo("/bicycles"))">
+                            Перейти к велосипедам
+                        </button>
+
+                        <button class="btn btn-primary me-2"
+                                @onclick="@(() => Navigation.NavigateTo("/bicycle-models"))">
+                            Перейти к моделям
+                        </button>
+
+                        <button class="btn btn-primary me-2"
+                                @onclick="@(() => Navigation.NavigateTo("/renters"))">
+                            Перейти к арендаторам
+                        </button>
+
+                        <button class="btn btn-primary me-2"
+                                @onclick="@(() => Navigation.NavigateTo("/rentals"))">
+                            Перейти к контрактам
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-start border-4 border-info">
+                <div class="card-body">
+                    <h5 class="card-title">Полезно</h5>
+                    <p class="card-text small">
+                        • Вы можете листать списки колесом мыши — таблицы внутри страниц поддерживают вертикальную прокрутку.<br />
+                        • Перед удалением вы увидите запрос подтверждения. Если запись нельзя удалить — будет объяснение.<br />
+                        • Если нужно, обратитесь к логам или нажмите "Обновить" внутри раздела.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

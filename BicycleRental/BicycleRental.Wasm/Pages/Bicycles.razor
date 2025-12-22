@@ -1,0 +1,79 @@
+﻿@page "/bicycles"
+@inject BicycleRentalApiWrapper Api
+@inject IJSRuntime JS
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto"><h4>Велосипеды</h4></Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary" Clicked="OpenCreate">Создать</Button>
+            </Column>
+        </Row>
+    </CardHeader>
+
+    <CardBody style="height:600px; overflow:hidden">
+        <AppAlert Message="@alertMessage" Type="@alertType" />
+
+        <BicycleDataGrid TItem="BicycleDto"
+                         Items="@BicycleList"
+                         OnDelete="ConfirmAndDelete" />
+    </CardBody>
+</Card>
+
+<BicycleCreateModal @ref="CreateModal" OnCreated="Reload" />
+
+@code {
+    private List<BicycleDto> BicycleList { get; set; } = new();
+    private Dictionary<int, string> ModelMap { get; set; } = new();
+    private BicycleCreateModal CreateModal { get; set; } = new();
+
+    private string? alertMessage;
+    private string alertType = "danger";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Reload();
+    }
+
+    private async Task Reload()
+    {
+        var models = (await Api.GetAllBicycleModels()).ToList();
+        ModelMap = models.ToDictionary(m => m.Id, m => m.Name ?? $"#{m.Id}");
+
+        BicycleList = (await Api.GetAllBicycles()).ToList();
+        StateHasChanged();
+    }
+
+    private Task OpenCreate() => CreateModal.Show();
+
+    private async Task ConfirmAndDelete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Вы уверены, что хотите удалить велосипед #{id} ?");
+        if (!ok) return;
+
+        try
+        {
+            var rentals = await Api.GetAllRentals();
+            if (rentals != null && rentals.Any(r => r.BicycleId == id))
+            {
+                ShowAlert($"Невозможно удалить велосипед #{id}: он участвует в арендах.", "danger");
+                return;
+            }
+
+            await Api.DeleteBicycle(id);
+            ShowAlert($"Велосипед #{id} успешно удалён.", "success");
+            await Reload();
+        }
+        catch (Exception ex)
+        {
+            ShowAlert($"Ошибка при удалении велосипеда #{id}: {ex.Message}", "danger");
+        }
+    }
+
+    private void ShowAlert(string message, string type = "danger")
+    {
+        alertMessage = message;
+        alertType = type;
+    }
+}
